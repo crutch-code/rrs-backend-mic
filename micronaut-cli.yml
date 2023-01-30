@@ -1,0 +1,6 @@
+applicationType: default
+defaultPackage: com.ilyak
+testFramework: junit
+sourceLanguage: java
+buildTool: gradle
+features: [ agorapulse-micronaut-worker, annotation-api, app-name, awaitility, data, data-jdbc, gradle, hibernate-jpa, http-client, http-session, jackson-databind, java, java-application, jdbc-hikari, junit, kafka, kafka-streams, logback, management, micronaut-build, mockito, openapi, postgres, readme, security, security-annotations, shade, swagger-ui, test-resources, tomcat-server, yaml ]

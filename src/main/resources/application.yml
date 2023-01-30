@@ -1,0 +1,105 @@
+micronaut:
+  application:
+    name: rrsBackendMic
+  executors:
+    io:
+      type: fixed
+      nThreads: 75
+  router:
+    static-resources:
+      swagger-ui:
+        paths: classpath:META-INF/swagger/views/swagger-ui
+        mapping: /swagger-ui/**
+      swagger:
+        paths: classpath:META-INF/swagger
+        mapping: /swagger/**
+      redoc:
+        paths: classpath:META-INF/swagger/views/redoc
+        mapping: /redoc/**
+      rapidoc:
+        paths: classpath:META-INF/swagger/views/rapidoc
+        mapping: /rapidoc/**
+  security:
+    enabled: true
+    authentication: bearer
+    intercept-url-map:
+      - pattern: /swagger/**
+        httpMethod: GET
+        access:
+          - isAnonymous()
+      - pattern: /swagger-ui/**
+        httpMethod: GET
+        access:
+          - isAnonymous()
+    endpoints:
+      login:
+        enabled: false
+      oauth:
+        enabled: false
+    token:
+      jwt:
+        enabled: true
+        cookie:
+          enabled: false
+        bearer:
+          enabled: true
+        signatures:
+          secret:
+            generator:
+              secret: pleaseChangeThisSecretForANewOne
+              jws-algorithm: HS256
+        generator:
+          access-token:
+            expiration: 10800
+            secret: pleaseChangeThisSecretForANewOne
+          refresh-token:
+            expiration: 24000
+            secret: ANewOne1234565434563575756757оапропоп
+  session:
+    http:
+      cookie: true
+      header: true
+  server:
+    port: ${PORT:8080}
+    idle-timeout: 10m
+    max-request-size: '100MB'
+    multipart:
+      enabled: true
+      max-file-size: '100MB'
+      threshold: '100MB'
+    cors:
+      enabled: true
+datasources:
+  default:
+    url: ${JDBC_URL:`jdbc:postgresql://localhost:5432/hcs`}
+    username: ${JDBC_USER:hcs}
+    password: ${JDBC_PASSWORD:hcs}
+    driverClassName: ${JDBC_DRIVER:org.postgresql.Driver}
+    maximum-pool-size: 15
+    idle-timeout: 30000
+
+endpoints:
+
+
+jpa:
+  default:
+    packages-to-scan:
+      - 'com.ilyak.entity'
+    properties:
+      hibernate:
+        generate_statistics: false
+        #        generate_statistics: true
+        naming:
+          implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
+          physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        enable_lazy_load_no_trans: true
+        hbm2ddl:
+          auto: none
+        #        show_sql: true
+        show_sql: false
+        jdbc:
+          batch_size: 100
+        order_inserts: true
+jackson:
+  json-view:
+    enabled: true

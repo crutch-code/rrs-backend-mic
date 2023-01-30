@@ -1,0 +1,92 @@
+import java.util.concurrent.ForkJoinTask
+
+plugins {
+    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("io.micronaut.application") version "3.6.7"
+    id("io.micronaut.test-resources") version "3.6.7"
+    id "application"
+}
+
+version = "0.1"
+group = "com.ilyak"
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    annotationProcessor("io.micronaut.data:micronaut-data-processor")
+    annotationProcessor("io.micronaut:micronaut-http-validation")
+    annotationProcessor("io.micronaut.openapi:micronaut-openapi")
+    annotationProcessor("io.micronaut.security:micronaut-security-annotations:3.5.0")
+    annotationProcessor("io.micronaut.configuration:micronaut-openapi:1.4.3")
+    annotationProcessor("org.projectlombok:lombok")
+    compileOnly("org.projectlombok:lombok")
+
+    runtimeOnly("ch.qos.logback:logback-classic")
+    implementation 'io.reactivex.rxjava3:rxjava:3.0.0-SNAPSHOT'
+    implementation("com.agorapulse:micronaut-worker:1.2.1-micronaut-3.0")
+
+    implementation("io.micronaut:micronaut-http-client")
+    implementation("io.micronaut:micronaut-jackson-databind")
+    implementation("io.micronaut:micronaut-management")
+    implementation("io.micronaut:micronaut-session")
+    implementation("io.micronaut.data:micronaut-data-jdbc")
+    implementation("io.micronaut.data:micronaut-data-hibernate-jpa")
+    implementation("io.micronaut.kafka:micronaut-kafka")
+    implementation("io.micronaut.kafka:micronaut-kafka-streams")
+    implementation("io.micronaut.security:micronaut-security-jwt:3.8.3")
+    implementation("io.micronaut.security:micronaut-security:3.9.0")
+    implementation("io.micronaut.sql:micronaut-hibernate-jpa")
+    implementation("io.micronaut.sql:micronaut-jdbc-hikari")
+    implementation("io.swagger.core.v3:swagger-annotations")
+    implementation("jakarta.annotation:jakarta.annotation-api")
+    implementation("io.micronaut:micronaut-http-server-netty:3.7.4")
+    runtimeOnly("ch.qos.logback:logback-classic")
+    runtimeOnly("org.postgresql:postgresql")
+    testImplementation("org.awaitility:awaitility:4.2.0")
+    testImplementation("org.mockito:mockito-core")
+    implementation("io.micronaut:micronaut-validation")
+
+}
+
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+    options.fork = true
+    options.forkOptions.jvmArgs <<
+            '-Dmicronaut.openapi.views.spec=' +
+            'rapidoc.enabled=true,' +
+            'swagger-ui.enabled=true,' +
+            'swagger-ui.theme=flattop,' +
+            'swagger-ui.docExpansion=none,' +
+            'swagger-ui.tagsSorter=\'alpha\',' +
+            'swagger-ui.operationsSorter=\'alpha\''
+}
+application {
+    mainClass.set("com.ilyak.Application")
+}
+java {
+    sourceCompatibility = JavaVersion.toVersion("14")
+    targetCompatibility = JavaVersion.toVersion("14")
+}
+
+graalvmNative.toolchainDetection = false
+
+
+
+micronaut {
+//    runtime("tomcat")
+    testRuntime("junit5")
+    processing {
+        incremental(true)
+        annotations("com.ilyak.*")
+    }
+    testResources {
+        sharedServer = true
+    }
+}
+
+
+
