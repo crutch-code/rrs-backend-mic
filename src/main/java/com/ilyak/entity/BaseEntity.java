@@ -2,10 +2,11 @@ package com.ilyak.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.micronaut.http.multipart.CompletedPart;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.*;
 
 @MappedSuperclass
 public class BaseEntity {

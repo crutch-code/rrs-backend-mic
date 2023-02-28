@@ -19,17 +19,5 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
 @SecurityRequirement(name = "BearerAuth")
 public class AdminController extends BaseController{
 
-//    @Error(exception = Exception.class, global = true)
-//    public HttpResponse<DefaultAppResponse> runtimeExceptionResponseHttpResponse(HttpRequest request, Exception ex){
-//        if (ex instanceof InternalExceptionResponse)
-//            return HttpResponse.serverError(((InternalExceptionResponse) ex).getResponse());
-//
-//        return HttpResponse.serverError(
-//                new DefaultAppResponse(
-//                        100,
-//                        "Unexpected Internal error: " +  ex.getMessage(),
-//                        request.getPath())
-//        );
-//    }
 
 }

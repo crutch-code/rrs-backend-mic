@@ -1,6 +1,5 @@
 package com.ilyak.utills.exception.handlers;
 
-import com.ilyak.entity.responses.DefaultAppResponse;
 import com.ilyak.entity.responses.exceptions.InternalExceptionResponse;
 import io.micronaut.context.annotation.Primary;
 import io.micronaut.http.HttpRequest;
@@ -13,7 +12,7 @@ import jakarta.inject.Singleton;
 @Singleton
 @Primary
 @Produces
-public class IntervalExceptionHandler implements ExceptionHandler<InternalExceptionResponse, MutableHttpResponse<?>> {
+public class InternalExceptionHandler implements ExceptionHandler<InternalExceptionResponse, MutableHttpResponse<?>> {
 
     @Override
     public MutableHttpResponse<?> handle(HttpRequest request, InternalExceptionResponse ex) {

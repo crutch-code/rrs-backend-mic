@@ -21,14 +21,10 @@ public class AuthProviderUser implements AuthenticationProvider {
 
     @Override
     public Publisher<AuthenticationResponse> authenticate(HttpRequest<?> httpRequest, AuthenticationRequest<?, ?> authenticationRequest) {
-
-        User user = userRepository.findByUserNickName(String.valueOf(authenticationRequest.getIdentity()))
-                .orElse(
-                        userRepository.findByUserEmail(String.valueOf(authenticationRequest.getIdentity()))
+        User user =
+                userRepository.findByUserEmail(String.valueOf(authenticationRequest.getIdentity()))
                                 .orElse(
-                                        userRepository.findByUserPhoneNumber(String.valueOf(authenticationRequest.getIdentity())).orElse(null)
-                                )
-                );
+                                        userRepository.findByUserPhoneNumber(String.valueOf(authenticationRequest.getIdentity())).orElse(null));
         if(user == null)
             return Flowable.just(AuthenticationResponse.failure("User not found"));
 

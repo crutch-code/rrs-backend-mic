@@ -12,6 +12,7 @@ import com.ilyak.utills.security.AuthProviderUser;
 import com.ilyak.utills.security.RefreshTokenHandler;
 import com.ilyak.utills.security.events.CustomLoginSuccessfulEvent;
 import com.ilyak.utills.security.requests.CustomAuthRequest;
+import com.nimbusds.jwt.JWTParser;
 import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.http.*;
 import io.micronaut.http.annotation.*;
@@ -108,9 +109,8 @@ public class AuthController extends BaseController {
     @Secured(SecurityRule.IS_ANONYMOUS)
     @Schema(anyOf = {AccessRefreshToken.class})
     public @NonNull Flowable<MutableHttpResponse<?>> refresh(@Valid @Body RefreshTokenRequest refresh, HttpRequest<?> request) {
-//        if(getCurrentUser() == null)
-//            throw new InternalExceptionResponse("That user already logged out", errorService.error("That user already logged out"));
-
+        if(logoutService.isLogout(JWTParser.parse(refresh.getToken()).getJWTClaimsSet().getStringClaim("session")))
+            throw new InternalExceptionResponse("That user already logged out", errorService.error("That user already logged out"));
         return Flowable.fromPublisher(
                     refreshTokenHandler.getAuthentication(refresh.getToken())
                 ).map(
@@ -138,7 +138,9 @@ public class AuthController extends BaseController {
     @Secured(SecurityRule.IS_AUTHENTICATED)
     public DefaultAppResponse logout(HttpRequest<?> request){
         try {
-            logoutService.putLogout(request.getHeaders().getAuthorization().orElseThrow(), getCurrentUser());
+            String token = request.getHeaders().getAuthorization().orElseThrow().replace("Bearer ", "");
+
+            logoutService.putLogout(JWTParser.parse(token).getJWTClaimsSet().getStringClaim("session"), getCurrentUser());
             return errorService.success("Unauthorized");
         }catch (Exception ex){
             authLog.error(ex.getMessage());

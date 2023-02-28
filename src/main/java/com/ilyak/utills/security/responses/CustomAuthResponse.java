@@ -21,12 +21,12 @@ public class CustomAuthResponse implements AuthenticationResponse {
         instance = new CustomAuthentication(credentials);
     }
 
-    public CustomAuthResponse(User credentials, Collection<String> roles) {
-        instance = new CustomAuthentication(credentials, roles);
+    public CustomAuthResponse(User credentials, Collection<String> roles, String sessionUUID) {
+        instance = new CustomAuthentication(credentials, roles, sessionUUID);
     }
 
-    public CustomAuthResponse(User credentials, Collection<String> roles, Map<String, Object> attributes) {
-        instance = new CustomAuthentication(credentials, roles, attributes);
+    public CustomAuthResponse(User credentials, Collection<String> roles, Map<String, Object> attributes, String sessionUUID) {
+        instance = new CustomAuthentication(credentials, roles, attributes, sessionUUID);
     }
     @Override
     public boolean isAuthenticated() {

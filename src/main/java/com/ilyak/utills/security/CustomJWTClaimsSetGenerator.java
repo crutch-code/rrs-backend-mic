@@ -35,7 +35,7 @@ public class CustomJWTClaimsSetGenerator extends JWTClaimsSetGenerator {
 //                ((CustomAuthentication) authentication).getCredentials()
                 new ObjectMapper().writeValueAsString(((CustomAuthentication) authentication).getCredentials())
         );
-        builder.claim("session", UUID.randomUUID().toString());
+        builder.claim("session", ((CustomAuthentication) authentication).getSessionUUID());
         builder.claim("roles",  authentication.getRoles());
         builder.claim("attributes", authentication.getAttributes());
     }

@@ -39,11 +39,9 @@ public class CustomJwtAuthFactory implements JwtAuthenticationFactory {
 
     @Override
     public Optional<Authentication> createAuthentication(JWT token) {
-        if (logoutService.isLogout("Bearer " + token.getParsedString()))
-            return Optional.empty();
         try {
             final JWTClaimsSet claimSet = token.getJWTClaimsSet();
-            if (claimSet == null) {
+            if (claimSet == null || logoutService.isLogout(claimSet.getStringClaim("session"))) {
                 return Optional.empty();
             }
             Map<String, Object> attributes = claimSet.getClaims();
@@ -51,7 +49,8 @@ public class CustomJwtAuthFactory implements JwtAuthenticationFactory {
                 new CustomAuthentication(
                             userForClaims(claimSet).orElseThrow(),
                             rolesFinder.resolveRoles(attributes),
-                            attributes
+                            attributes,
+                            sessionUuidForClaims(claimSet).orElseThrow()
                         )
             );
         } catch (ParseException e) {
@@ -74,5 +73,10 @@ public class CustomJwtAuthFactory implements JwtAuthenticationFactory {
     protected Optional<User> userForClaims(JWTClaimsSet claimsSet){
         LOG.info("claims set: " + claimsSet.getClaims().toString());
         return  Optional.of(new ObjectMapper().readValue(claimsSet.getClaim("credentials").toString(), User.class));
+    }
+
+    @SneakyThrows
+    protected Optional<String> sessionUuidForClaims(JWTClaimsSet claimsSet){
+        return Optional.of(claimsSet.getStringClaim("session"));
     }
 }

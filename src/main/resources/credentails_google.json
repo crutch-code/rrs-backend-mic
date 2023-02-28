@@ -1,1 +1,10 @@
-{"web":{"client_id":"253836004947-1j3j55an1pekou5ue8hkjsbon019f7rj.apps.googleusercontent.com","project_id":"remote-rent-system","auth_uri":"https://accounts.google.com/o/oauth2/auth","token_uri":"https://oauth2.googleapis.com/token","auth_provider_x509_cert_url":"https://www.googleapis.com/oauth2/v1/certs","client_secret":"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"}}
+{
+  "web":{
+    "client_id":"253836004947-1j3j55an1pekou5ue8hkjsbon019f7rj.apps.googleusercontent.com",
+    "project_id":"remote-rent-system",
+    "auth_uri":"https://accounts.google.com/o/oauth2/auth",
+    "token_uri":"https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url":"https://www.googleapis.com/oauth2/v1/certs",
+    "client_secret":"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"
+  }
+}

@@ -4,6 +4,11 @@ import com.fasterxml.jackson.annotation.*;
 import com.ilyak.entity.jsonviews.Default;
 import com.ilyak.entity.jsonviews.WithPassword;
 import io.micronaut.core.annotation.Introspected;
+import io.micronaut.http.annotation.Part;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.Generated;
+import org.hibernate.annotations.GenerationTime;
 
 import javax.persistence.*;
 import java.sql.Date;
@@ -12,17 +17,13 @@ import java.sql.Date;
 @Table(name = "users", schema = "public")
 @Introspected
 @JsonView(Default.class)
-public class User extends BaseEntity{
+@DynamicInsert
+public class User extends BaseEntity {
     @JsonInclude
     @JsonProperty("user_name")
     @Column(name = "user_name")
     @JsonAlias("userName")
     private String userName;
-    @JsonInclude
-    @JsonProperty("gender")
-    @Column(name = "gender")
-    private String gender;
-
     @JsonInclude
     @JsonProperty("user_birthday")
     @Column(name = "user_birthday")
@@ -43,11 +44,6 @@ public class User extends BaseEntity{
     @JsonAlias("userEmail")
     private String userEmail;
 
-    @JsonInclude
-    @JsonProperty("user_nickname")
-    @Column(name = "user_nickname")
-    @JsonAlias("userNickName")
-    private String userNickName;
 
     @JsonProperty("user_password")
     @Column(name = "user_password")
@@ -56,7 +52,8 @@ public class User extends BaseEntity{
     private String userPassword;
 
     @ManyToOne
-    @JoinColumn(name = "avatar_path")
+    @JoinColumn(name = "avatar_path", nullable = false, columnDefinition = "default '2303010801231333'")
+//    @JoinColumn(name = "avatar_path", nullable = false)
     @JsonProperty("avatar_path")
     @JsonInclude
     @JsonAlias("avatarPath")
@@ -68,23 +65,28 @@ public class User extends BaseEntity{
     @JsonAlias("userPhoneNumber")
     private String userPhoneNumber;
 
+    @JsonInclude
+    @JsonProperty("user_is_confirm")
+//    @ColumnDefault("default 'false'")
+//    @Generated(GenerationTime.INSERT)
+    @Column(name = "user_is_confirm", nullable = false)
+    @JsonAlias("userIsConfirm")
+    private Boolean userIsConfirm;
 
     public User(
-            String oid, String userName, String gender,
-            Date userBirthday, Date userRegDate, String userEmail,
-            String userNickName, String userPassword, Files avatarPath,
-            String userPhoneNumber
+            String oid, String userName,
+            Date userBirthday, Date userRegDate, String userEmail, String userPassword, Files avatarPath,
+            String userPhoneNumber, Boolean userIsConfirm
     ) {
         super(oid);
         this.userName = userName;
-        this.gender = gender;
         this.userBirthday = userBirthday;
         this.userRegDate = userRegDate;
         this.userEmail = userEmail;
-        this.userNickName = userNickName;
         this.userPassword = userPassword;
         this.avatarPath = avatarPath;
         this.userPhoneNumber = userPhoneNumber;
+        this.userIsConfirm = userIsConfirm;
     }
 
     public User() {
@@ -105,14 +107,6 @@ public class User extends BaseEntity{
 
     public void setUserName(String userName) {
         this.userName = userName;
-    }
-
-    public String getGender() {
-        return gender;
-    }
-
-    public void setGender(String gender) {
-        this.gender = gender;
     }
 
     public Date getUserBirthday() {
@@ -139,12 +133,12 @@ public class User extends BaseEntity{
         this.userEmail = userEmail;
     }
 
-    public String getUserNickName() {
-        return userNickName;
+    public Boolean getUserIsConfirm() {
+        return userIsConfirm;
     }
 
-    public void setUserNickName(String userNickName) {
-        this.userNickName = userNickName;
+    public void setUserIsConfirm(Boolean userIsConfirm) {
+        this.userIsConfirm = userIsConfirm;
     }
 
     public String getUserPassword() {

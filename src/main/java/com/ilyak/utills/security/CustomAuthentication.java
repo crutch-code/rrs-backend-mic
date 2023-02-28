@@ -5,36 +5,50 @@ import io.micronaut.context.annotation.Replaces;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.authentication.ServerAuthentication;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Replaces(ServerAuthentication.class)
 public class CustomAuthentication extends ServerAuthentication{
 
     private User credentials;
 
+    private String sessionUUID;
+
+
+
+
 
     public CustomAuthentication(User credentials) {
-        super(credentials.getUserNickName(), null, null);
+        super(credentials.getUserEmail(), null, null);
         this.credentials = credentials;
+        this.sessionUUID = UUID.randomUUID().toString();
     }
 
-    public CustomAuthentication(User credentials, Collection<String> roles) {
-        super(credentials.getUserNickName(), roles, null);
+    public CustomAuthentication(User credentials, String sessionUUID){
+        super(credentials.getUserEmail(), null, null);
         this.credentials = credentials;
-
+        this.sessionUUID = sessionUUID;
     }
 
-    public CustomAuthentication(User credentials, Collection<String> roles, Map<String, Object> attributes) {
-        super(credentials.getUserNickName(), roles, attributes);
+    public CustomAuthentication(User credentials, Collection<String> roles, String sessionUUID) {
+        super(credentials.getUserEmail(), roles, null);
         this.credentials = credentials;
+        this.sessionUUID = sessionUUID;
+    }
+
+    public CustomAuthentication(User credentials, Collection<String> roles, Map<String, Object> attributes, String sessionUUID) {
+        super(credentials.getUserEmail(), roles, attributes);
+        this.credentials = credentials;
+        this.sessionUUID = sessionUUID;
     }
 
     @Override
     public String getName() {
-        return credentials.getUserNickName();
+        return credentials.getUserEmail();
+    }
+
+    public String getSessionUUID() {
+        return sessionUUID;
     }
 
     public User getCredentials() {

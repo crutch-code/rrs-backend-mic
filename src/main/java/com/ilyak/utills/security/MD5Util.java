@@ -1,4 +1,4 @@
-package ru.fusionsoft.iu.dereferencer.utils;
+package com.ilyak.utills.security;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
