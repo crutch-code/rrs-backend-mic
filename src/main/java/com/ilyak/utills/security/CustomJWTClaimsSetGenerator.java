@@ -1,6 +1,7 @@
 package com.ilyak.utills.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.nimbusds.jwt.JWTClaimsSet;
 import io.micronaut.context.annotation.Replaces;
 import io.micronaut.runtime.ApplicationConfiguration;
@@ -33,7 +34,7 @@ public class CustomJWTClaimsSetGenerator extends JWTClaimsSetGenerator {
 
         builder.claim("credentials",
 //                ((CustomAuthentication) authentication).getCredentials()
-                new ObjectMapper().writeValueAsString(((CustomAuthentication) authentication).getCredentials())
+                new ObjectMapper().registerModule(new JavaTimeModule()).writeValueAsString(((CustomAuthentication) authentication).getCredentials())
         );
         builder.claim("session", ((CustomAuthentication) authentication).getSessionUUID());
         builder.claim("roles",  authentication.getRoles());

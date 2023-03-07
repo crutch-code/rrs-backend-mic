@@ -1,23 +1,23 @@
 package com.ilyak.entity;
 
 import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.ilyak.entity.jsonviews.Default;
 import com.ilyak.entity.jsonviews.WithPassword;
 import io.micronaut.core.annotation.Introspected;
-import io.micronaut.http.annotation.Part;
-import org.hibernate.annotations.ColumnDefault;
+import io.micronaut.jackson.annotation.JacksonFeatures;
 import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.Generated;
-import org.hibernate.annotations.GenerationTime;
 
 import javax.persistence.*;
-import java.sql.Date;
+import java.time.LocalDate;
+import java.util.Set;
 
 @Entity
 @Table(name = "users", schema = "public")
 @Introspected
 @JsonView(Default.class)
 @DynamicInsert
+@JacksonFeatures(additionalModules = JavaTimeModule.class)
 public class User extends BaseEntity {
     @JsonInclude
     @JsonProperty("user_name")
@@ -28,15 +28,15 @@ public class User extends BaseEntity {
     @JsonProperty("user_birthday")
     @Column(name = "user_birthday")
     @JsonAlias("userBirthday")
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date userBirthday;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate userBirthday;
 
     @JsonInclude
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     @JsonProperty("user_reg_date")
     @Column(name = "user_reg_date")
     @JsonAlias("userRegDate")
-    private Date userRegDate;
+    private LocalDate userRegDate;
 
     @JsonInclude
     @JsonProperty("user_email")
@@ -51,13 +51,12 @@ public class User extends BaseEntity {
     @JsonView(WithPassword.class)
     private String userPassword;
 
-    @ManyToOne
-    @JoinColumn(name = "avatar_path", nullable = false, columnDefinition = "default '2303010801231333'")
-//    @JoinColumn(name = "avatar_path", nullable = false)
-    @JsonProperty("avatar_path")
+    @ManyToMany
+    @JoinTable(name = "users_avatar_file",
+            joinColumns = @JoinColumn(name = "user_oid", referencedColumnName = "oid"),
+            inverseJoinColumns = @JoinColumn(name = "file_oid", referencedColumnName = "oid"))
     @JsonInclude
-    @JsonAlias("avatarPath")
-    private Files avatarPath;
+    private Set<Files> avatars = new java.util.LinkedHashSet<>();
 
     @JsonInclude
     @JsonProperty("user_phone_number")
@@ -67,15 +66,13 @@ public class User extends BaseEntity {
 
     @JsonInclude
     @JsonProperty("user_is_confirm")
-//    @ColumnDefault("default 'false'")
-//    @Generated(GenerationTime.INSERT)
     @Column(name = "user_is_confirm", nullable = false)
     @JsonAlias("userIsConfirm")
     private Boolean userIsConfirm;
 
     public User(
             String oid, String userName,
-            Date userBirthday, Date userRegDate, String userEmail, String userPassword, Files avatarPath,
+            LocalDate userBirthday, LocalDate userRegDate, String userEmail, String userPassword, Set<Files> avatars,
             String userPhoneNumber, Boolean userIsConfirm
     ) {
         super(oid);
@@ -84,7 +81,7 @@ public class User extends BaseEntity {
         this.userRegDate = userRegDate;
         this.userEmail = userEmail;
         this.userPassword = userPassword;
-        this.avatarPath = avatarPath;
+        this.avatars = avatars;
         this.userPhoneNumber = userPhoneNumber;
         this.userIsConfirm = userIsConfirm;
     }
@@ -93,12 +90,12 @@ public class User extends BaseEntity {
 
     }
 
-    public Files getAvatarPath() {
-        return avatarPath;
+    public Set<Files> getAvatars() {
+        return avatars;
     }
 
-    public void setAvatarPath(Files avatarPath) {
-        this.avatarPath = avatarPath;
+    public void setAvatars(Set<Files> avatars) {
+        this.avatars = avatars;
     }
 
     public String getUserName() {
@@ -109,19 +106,19 @@ public class User extends BaseEntity {
         this.userName = userName;
     }
 
-    public Date getUserBirthday() {
+    public LocalDate getUserBirthday() {
         return userBirthday;
     }
 
-    public void setUserBirthday(Date userBirthday) {
+    public void setUserBirthday(LocalDate userBirthday) {
         this.userBirthday = userBirthday;
     }
 
-    public Date getUserRegDate() {
+    public LocalDate getUserRegDate() {
         return userRegDate;
     }
 
-    public void setUserRegDate(Date userRegDay) {
+    public void setUserRegDate(LocalDate userRegDay) {
         this.userRegDate = userRegDay;
     }
 

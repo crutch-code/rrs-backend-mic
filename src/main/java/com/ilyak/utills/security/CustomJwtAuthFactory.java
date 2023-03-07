@@ -1,6 +1,7 @@
 package com.ilyak.utills.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.ilyak.entity.User;
 import com.ilyak.service.UserLogoutService;
 import com.nimbusds.jwt.JWT;
@@ -72,7 +73,7 @@ public class CustomJwtAuthFactory implements JwtAuthenticationFactory {
     @SneakyThrows
     protected Optional<User> userForClaims(JWTClaimsSet claimsSet){
         LOG.info("claims set: " + claimsSet.getClaims().toString());
-        return  Optional.of(new ObjectMapper().readValue(claimsSet.getClaim("credentials").toString(), User.class));
+        return  Optional.of(new ObjectMapper().registerModule(new JavaTimeModule()).readValue(claimsSet.getClaim("credentials").toString(), User.class));
     }
 
     @SneakyThrows

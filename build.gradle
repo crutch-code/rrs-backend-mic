@@ -15,6 +15,12 @@ repositories {
     mavenLocal()
 }
 
+configurations.all {
+    resolutionStrategy.dependencySubstitution {
+        substitute(module("com.fasterxml.jackson.datatype:jackson-datatype-jsr310"))
+    }
+}
+
 dependencies {
     annotationProcessor("io.micronaut.data:micronaut-data-processor")
     annotationProcessor("io.micronaut:micronaut-http-validation")
@@ -24,6 +30,8 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok")
     compileOnly("org.projectlombok:lombok")
 
+
+    implementation 'org.bouncycastle:bcpkix-jdk15on:1.65'
     implementation 'com.google.api-client:google-api-client:2.1.2'
     implementation 'com.google.http-client:google-http-client-jackson2:1.42.3'
     implementation 'com.google.oauth-client:google-oauth-client-jetty:1.34.1'
@@ -38,7 +46,8 @@ dependencies {
     implementation("com.agorapulse:micronaut-worker:1.2.1-micronaut-3.0")
 
     implementation("io.micronaut:micronaut-http-client")
-    implementation("io.micronaut:micronaut-jackson-databind")
+    implementation("io.micronaut:micronaut-jackson-databind:3.5.6")
+    implementation("io.micronaut:micronaut-jackson-core:3.5.6")
     implementation("io.micronaut:micronaut-management")
     implementation("io.micronaut:micronaut-session")
     implementation("io.micronaut.data:micronaut-data-jdbc")
@@ -58,7 +67,9 @@ dependencies {
     testImplementation("org.mockito:mockito-core")
     implementation("io.micronaut:micronaut-validation")
 
+
 }
+
 
 
 tasks.withType(JavaCompile) {

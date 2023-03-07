@@ -21,6 +21,11 @@ public class ErrorService {
     public static final int UNAUTHORIZED = 401;
 
 
+    //internals codes
+
+    public static  final int NOT_IMPLEMENTED_YET = 1001;
+
+
 
     public DefaultAppResponse success(){
         return new DefaultAppResponse(
@@ -54,4 +59,19 @@ public class ErrorService {
         );
     }
 
+    public DefaultAppResponse toBeImplemented(String message){
+        return  new DefaultAppResponse(
+                NOT_IMPLEMENTED_YET,
+                "This route will be implemented later: " + message,
+                ServerRequestContext.currentRequest().map(m-> m.getPath()).orElse(null)
+        );
+    }
+
+    public DefaultAppResponse toBeImplemented(){
+        return  new DefaultAppResponse(
+                NOT_IMPLEMENTED_YET,
+                "This solution will be implemented later",
+                ServerRequestContext.currentRequest().map(m-> m.getPath()).orElse(null)
+        );
+    }
 }

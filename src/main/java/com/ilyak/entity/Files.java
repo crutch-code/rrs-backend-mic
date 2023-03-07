@@ -8,7 +8,7 @@ import io.micronaut.core.annotation.Introspected;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "files", schema = "public")
@@ -29,10 +29,10 @@ public class Files extends BaseEntity{
     @Column(name = "updated_at")
     @JsonProperty(value = "updated_at")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Europe/Moscow")
-    public Timestamp updatedAt;
+    public LocalDateTime updatedAt;
 
 
-    public Files(String oid, String filePath, Double fileSize, Timestamp updatedAt) {
+    public Files(String oid, String filePath, Double fileSize, LocalDateTime updatedAt) {
         super(oid);
         this.filePath = filePath;
         this.fileSize = fileSize;
@@ -59,11 +59,11 @@ public class Files extends BaseEntity{
         this.fileSize = fileSize;
     }
 
-    public Timestamp getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Timestamp updatedAt) {
+    public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 }

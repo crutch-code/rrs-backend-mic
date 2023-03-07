@@ -1,23 +1,12 @@
 package com.ilyak.controller;
 
 
-import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.api.client.http.MultipartContent;
-import com.ilyak.entity.Files;
 import com.ilyak.entity.User;
-import com.ilyak.entity.jsonviews.Default;
 import com.ilyak.entity.responses.DefaultAppResponse;
 import com.ilyak.entity.responses.exceptions.InternalExceptionResponse;
-import io.micronaut.context.annotation.Requires;
-import io.micronaut.context.annotation.Type;
-import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.*;
-import io.micronaut.http.multipart.CompletedFileUpload;
-import io.micronaut.http.multipart.CompletedPart;
-import io.micronaut.http.multipart.PartData;
 import io.micronaut.scheduling.TaskExecutors;
 import io.micronaut.scheduling.annotation.ExecuteOn;
 import io.micronaut.security.annotation.Secured;
@@ -27,7 +16,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Date;
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Controller("/api/reg")
 @Tag(name = "Контроллер Регистрации",
@@ -64,7 +55,7 @@ public class RegisterController extends BaseController{
             @Body User credential
     ){
         try {
-            credential.setUserRegDate(new Date(System.currentTimeMillis()));
+            credential.setUserRegDate(LocalDateTime.now(ZoneId.systemDefault()).toLocalDate());
             credential.setOid(transactionalRepository.genOid().orElseThrow());
             userRepository.save(credential);
             return HttpResponse.ok(

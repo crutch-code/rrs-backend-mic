@@ -34,7 +34,7 @@ public class EmailService {
         MimeMessage email = new MimeMessage(session);
         email.setFrom(new InternetAddress("remote.rent.system@gmail.com", "Remote Rent System"));
         email.addRecipient(javax.mail.Message.RecipientType.TO,
-                new InternetAddress("boris.stupin01@gmail.com"));
+                new InternetAddress("boris. stupin01@gmail.com"));
         email.setSubject("title");
         email.setText("try txt");
 

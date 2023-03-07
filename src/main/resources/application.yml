@@ -77,6 +77,11 @@ micronaut:
       mixed: true
     cors:
       enabled: true
+    ssl:
+      enabled: false
+      port: 443
+      build-self-signed: true
+
 datasources:
   default:
     url: ${JDBC_URL:`jdbc:postgresql://localhost:5432/hcs`}
@@ -96,8 +101,8 @@ jpa:
     properties:
       hibernate:
 
-#        generate_statistics: false
-        generate_statistics: true
+        generate_statistics: false
+#        generate_statistics: true
         naming:
           implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
           physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
@@ -111,8 +116,13 @@ jpa:
           batch_size: 100
         order_inserts: true
 jackson:
+  module-scan: true
+  bean-introspection-module: true
   json-view:
     enabled: true
+
+
+
 #javamail:
 #  properties:
 #    mail:

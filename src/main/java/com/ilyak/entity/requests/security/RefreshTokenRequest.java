@@ -1,4 +1,4 @@
-package com.ilyak.entity.requests;
+package com.ilyak.entity.requests.security;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.sun.istack.NotNull;

@@ -2,9 +2,8 @@ package com.ilyak.controller;
 
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.ilyak.entity.User;
 import com.ilyak.entity.jsonviews.Default;
-import com.ilyak.entity.requests.RefreshTokenRequest;
+import com.ilyak.entity.requests.security.RefreshTokenRequest;
 import com.ilyak.entity.responses.DefaultAppResponse;
 import com.ilyak.entity.responses.exceptions.InternalExceptionResponse;
 import com.ilyak.service.UserLogoutService;
@@ -69,14 +68,6 @@ public class AuthController extends BaseController {
     private LoginHandler loginHandler;
 
 
-    @Options(uri = "/login")
-    public String handleOptionsLogin() {
-
-        // let the cors filter do its job
-        return "200";
-    }
-
-
     @ExecuteOn(TaskExecutors.IO)
     @Operation(summary = "Login")
     @Post(uri = "/login", produces = MediaType.APPLICATION_JSON)
@@ -118,17 +109,7 @@ public class AuthController extends BaseController {
                 );
     }
 
-    @ExecuteOn(TaskExecutors.IO)
-    @Operation(summary = "Infos about authored user")
-    @Get(uri = "/infos", produces = MediaType.APPLICATION_JSON_STREAM)
-    @SecurityRequirement(name = "BearerAuth")
-    @Secured(SecurityRule.IS_AUTHENTICATED)
-    @JsonView(Default.class)
-    public User userLogged(){
-        return getCurrentUser();
-    }
-
-
+    
     @SneakyThrows
     @ExecuteOn(TaskExecutors.IO)
     @Operation(summary = "Logout current user")
