@@ -1,6 +1,6 @@
 package com.ilyak.utills.security;
 
-import com.ilyak.entity.User;
+import com.ilyak.entity.jpa.User;
 import com.ilyak.repository.UserRepository;
 import com.ilyak.utills.security.responses.CustomAuthResponse;
 import io.micronaut.http.HttpRequest;
@@ -31,7 +31,7 @@ public class AuthProviderUser implements AuthenticationProvider {
         if (!user.getUserPassword().equals(authenticationRequest.getSecret()))
             return Flowable.just(AuthenticationResponse.failure("Incorrect Password"));
 
-        return Flowable.just(new CustomAuthResponse(user));
+        return Flowable.just(new CustomAuthResponse(user.getOid(), user.getUserName()));
     }
 
 

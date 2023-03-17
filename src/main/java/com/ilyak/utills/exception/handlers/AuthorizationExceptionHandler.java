@@ -1,15 +1,11 @@
 package com.ilyak.utills.exception.handlers;
 
 
-import com.ilyak.entity.responses.exceptions.InternalExceptionResponse;
-import com.ilyak.service.ErrorService;
-import io.micronaut.context.annotation.Primary;
+import com.ilyak.service.ResponseService;
 import io.micronaut.context.annotation.Replaces;
-import io.micronaut.context.annotation.Requires;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MutableHttpResponse;
-import io.micronaut.http.annotation.Error;
 import io.micronaut.http.annotation.Produces;
 import io.micronaut.http.server.exceptions.ExceptionHandler;
 import io.micronaut.security.authentication.AuthenticationException;
@@ -23,9 +19,9 @@ import jakarta.inject.Singleton;
 @Replaces(AuthenticationExceptionHandler.class)
 public class AuthorizationExceptionHandler implements ExceptionHandler<AuthenticationException, MutableHttpResponse<?>> {
     @Inject
-    ErrorService errorService;
+    ResponseService responseService;
     @Override
     public MutableHttpResponse<?> handle(HttpRequest request, AuthenticationException exception) {
-        return HttpResponse.unauthorized().body(errorService.unauthorized(exception.getMessage()));
+        return HttpResponse.unauthorized().body(responseService.unauthorized(exception.getMessage()));
     }
 }

@@ -1,24 +1,21 @@
 package com.ilyak.service;
 
 
+import com.ilyak.entity.responses.AppResponseWithObject;
 import com.ilyak.entity.responses.DefaultAppResponse;
-import com.ilyak.entity.responses.exceptions.InternalExceptionResponse;
-import io.micronaut.context.annotation.Context;
-import io.micronaut.http.HttpRequest;
-import io.micronaut.http.HttpResponse;
-import io.micronaut.http.annotation.Controller;
-import io.micronaut.http.annotation.Error;
 import io.micronaut.http.context.ServerRequestContext;
 import jakarta.inject.Singleton;
 
 @Singleton
-public class ErrorService {
+public class ResponseService {
 
     public static final int SUCCESS_CODE = 0;
 
     public static final int INTERNAL_ERROR = 500;
 
     public static final int UNAUTHORIZED = 401;
+
+    public static final int FORBIDDEN = 403;
 
 
     //internals codes
@@ -43,10 +40,28 @@ public class ErrorService {
         );
     }
 
+    public AppResponseWithObject successWithObject(String message, Object object){
+        return new AppResponseWithObject(
+                SUCCESS_CODE,
+                "Успешно завершено: " + message,
+                ServerRequestContext.currentRequest().map(m-> m.getPath()).orElse(null),
+                object
+        );
+    }
+
+    public AppResponseWithObject successWithObject(Object object){
+        return new AppResponseWithObject(
+                SUCCESS_CODE,
+                "Успешно завершено",
+                ServerRequestContext.currentRequest().map(m-> m.getPath()).orElse(null),
+                object
+        );
+    }
+
     public  DefaultAppResponse error(String message){
         return  new DefaultAppResponse(
                 INTERNAL_ERROR,
-                "Internal Error: " + message,
+                "Внутренняя ошибка: " + message,
                 ServerRequestContext.currentRequest().map(m-> m.getPath()).orElse(null)
         );
     }
@@ -54,11 +69,26 @@ public class ErrorService {
     public DefaultAppResponse unauthorized(String message){
         return  new DefaultAppResponse(
                 UNAUTHORIZED,
-                "User unauthorized: " + message,
+                "Пользователь не авторизован: " + message,
                 ServerRequestContext.currentRequest().map(m-> m.getPath()).orElse(null)
         );
     }
 
+    public DefaultAppResponse forbidden(String message){
+        return  new DefaultAppResponse(
+                FORBIDDEN,
+                "Доступ запрещён: " + message,
+                ServerRequestContext.currentRequest().map(m-> m.getPath()).orElse(null)
+        );
+    }
+
+    public DefaultAppResponse forbidden(){
+        return  new DefaultAppResponse(
+                FORBIDDEN,
+                "Доступ запрещён",
+                ServerRequestContext.currentRequest().map(m-> m.getPath()).orElse(null)
+        );
+    }
     public DefaultAppResponse toBeImplemented(String message){
         return  new DefaultAppResponse(
                 NOT_IMPLEMENTED_YET,

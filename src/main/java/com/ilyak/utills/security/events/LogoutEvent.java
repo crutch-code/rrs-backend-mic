@@ -1,6 +1,6 @@
 package com.ilyak.utills.security.events;
 
-import com.ilyak.entity.User;
+import com.ilyak.entity.jpa.User;
 import io.micronaut.context.event.ApplicationEvent;
 
 public class LogoutEvent extends ApplicationEvent {

@@ -1,13 +1,8 @@
 package com.ilyak.service;
 
-import com.ilyak.entity.User;
-import com.ilyak.utills.security.events.CustomLoginSuccessfulEvent;
-import com.ilyak.utills.security.events.LogoutEvent;
+import com.ilyak.entity.jpa.User;
 import io.micronaut.context.annotation.Value;
-import io.micronaut.runtime.event.annotation.EventListener;
 import io.micronaut.scheduling.TaskScheduler;
-import io.micronaut.scheduling.annotation.Async;
-import io.micronaut.security.token.event.AccessTokenGeneratedEvent;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 

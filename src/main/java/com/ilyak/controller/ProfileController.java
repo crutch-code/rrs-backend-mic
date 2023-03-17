@@ -1,38 +1,30 @@
 package com.ilyak.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.ilyak.entity.Files;
-import com.ilyak.entity.User;
-import com.ilyak.entity.jsonviews.Default;
+import com.ilyak.entity.jpa.User;
+import com.ilyak.entity.jsonviews.JsonViewCollector;
 import com.ilyak.entity.requests.profile.ChangePasswordRequest;
 import com.ilyak.entity.responses.DefaultAppResponse;
 import com.ilyak.entity.responses.exceptions.InternalExceptionResponse;
-import io.micronaut.core.annotation.NonNull;
-import io.micronaut.data.annotation.Query;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.*;
-import io.micronaut.http.multipart.CompletedFileUpload;
 import io.micronaut.scheduling.TaskExecutors;
 import io.micronaut.scheduling.annotation.ExecuteOn;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecuredAnnotationRule;
 import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.validation.Validated;
-import io.reactivex.rxjava3.core.Flowable;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
-import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.Flow;
+import java.util.Optional;
 
 
 
@@ -59,7 +51,7 @@ public class ProfileController extends BaseController{
     @Get(uri = "/infos", produces = MediaType.APPLICATION_JSON_STREAM)
     @SecurityRequirement(name = "BearerAuth")
     @Secured(SecurityRule.IS_AUTHENTICATED)
-    @JsonView(Default.class)
+    @JsonView(JsonViewCollector.User.WithAvatarsList.class)
     public User userLogged(){
         return getCurrentUser();
     }
@@ -77,10 +69,10 @@ public class ProfileController extends BaseController{
                     return HttpResponse.status(HttpStatus.FORBIDDEN).body(new DefaultAppResponse());
                 user.setUserPassword(request.getNewPassword());
                 userRepository.update(user);
-                return HttpResponse.ok(errorService.success("Success changed password"));
+                return HttpResponse.ok(responseService.success("Success changed password"));
         }catch (Exception ex){
             logger.error(ex.getMessage());
-            throw new InternalExceptionResponse(ex.getMessage(), errorService.error(ex.getMessage()));
+            throw new InternalExceptionResponse(ex.getMessage(), responseService.error(ex.getMessage()));
         }
     }
 
@@ -92,49 +84,31 @@ public class ProfileController extends BaseController{
 
     public HttpResponse<DefaultAppResponse> resetPassword(@Body ChangePasswordRequest request){
         try{
-            return HttpResponse.ok(errorService.toBeImplemented());
+            return HttpResponse.ok(responseService.toBeImplemented());
         }catch (Exception ex){
             logger.error(ex.getMessage());
-            throw new InternalExceptionResponse(ex.getMessage(), errorService.error(ex.getMessage()));
+            throw new InternalExceptionResponse(ex.getMessage(), responseService.error(ex.getMessage()));
         }
     }
 
     @ExecuteOn(TaskExecutors.IO)
     @Operation(summary = "Phone")
-    @Patch(uri = "/phone/change{phone}", produces = MediaType.APPLICATION_JSON_STREAM)
+    @Patch(uri = "/phone/change{?phone}", produces = MediaType.APPLICATION_JSON_STREAM)
     @SecurityRequirement(name = "BearerAuth")
     @Secured(SecurityRule.IS_AUTHENTICATED)
-    public HttpResponse<DefaultAppResponse> changePhone(@QueryValue @NonNull String phone){
+    public HttpResponse<DefaultAppResponse> changePhone(@QueryValue Optional<String> phone){
         try{
             User user = getCurrentUser();
-            return HttpResponse.ok(errorService.success());
-        }catch (Exception ex){
-            logger.error(ex.getMessage());
-            throw new InternalExceptionResponse(ex.getMessage(), errorService.error(ex.getMessage()));
-        }
-    }
-
-    @ExecuteOn(TaskExecutors.IO)
-    @Operation(summary = "Adding user avatars")
-    @Post(uri = "/avatar/add", consumes = MediaType.MULTIPART_FORM_DATA, produces = MediaType.APPLICATION_JSON_STREAM)
-    @SecurityRequirement(name = "BearerAuth")
-    @Secured(SecurityRule.IS_AUTHENTICATED)
-    public HttpResponse<DefaultAppResponse> addAvatar(@Part Publisher<CompletedFileUpload> avatars){
-        try{
-            User user = getCurrentUser();
-            Flowable.fromPublisher(avatars).subscribe(emitted -> {
-              Files target = filesService.save(emitted, filesService.getDirPattern() + filesService.getAvatars());
-              filesRepository.save(target);
-              user.getAvatars().add(target);
-
-            });
+            user.setUserPhoneNumber(phone.orElseThrow());
             userRepository.update(user);
-            return HttpResponse.ok(errorService.success("avatars uploaded successfully"));
+            return HttpResponse.ok(responseService.success("phone has been changed"));
         }catch (Exception ex){
             logger.error(ex.getMessage());
-            throw new InternalExceptionResponse(ex.getMessage(), errorService.error(ex.getMessage()));
+            throw new InternalExceptionResponse(ex.getMessage(), responseService.error(ex.getMessage()));
         }
     }
+
+
 
 
 

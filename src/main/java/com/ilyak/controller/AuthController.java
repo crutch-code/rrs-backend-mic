@@ -2,7 +2,7 @@ package com.ilyak.controller;
 
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.ilyak.entity.jsonviews.Default;
+import com.ilyak.entity.jsonviews.JsonViewCollector;
 import com.ilyak.entity.requests.security.RefreshTokenRequest;
 import com.ilyak.entity.responses.DefaultAppResponse;
 import com.ilyak.entity.responses.exceptions.InternalExceptionResponse;
@@ -101,7 +101,7 @@ public class AuthController extends BaseController {
     @Schema(anyOf = {AccessRefreshToken.class})
     public @NonNull Flowable<MutableHttpResponse<?>> refresh(@Valid @Body RefreshTokenRequest refresh, HttpRequest<?> request) {
         if(logoutService.isLogout(JWTParser.parse(refresh.getToken()).getJWTClaimsSet().getStringClaim("session")))
-            throw new InternalExceptionResponse("That user already logged out", errorService.error("That user already logged out"));
+            throw new InternalExceptionResponse("That user already logged out", responseService.error("That user already logged out"));
         return Flowable.fromPublisher(
                     refreshTokenHandler.getAuthentication(refresh.getToken())
                 ).map(
@@ -115,17 +115,17 @@ public class AuthController extends BaseController {
     @Operation(summary = "Logout current user")
     @Post(uri = "/logout", produces = MediaType.APPLICATION_JSON)
     @SecurityRequirement(name = "BearerAuth")
-    @JsonView(Default.class)
+    @JsonView(JsonViewCollector.Default.class)
     @Secured(SecurityRule.IS_AUTHENTICATED)
     public DefaultAppResponse logout(HttpRequest<?> request){
         try {
             String token = request.getHeaders().getAuthorization().orElseThrow().replace("Bearer ", "");
 
             logoutService.putLogout(JWTParser.parse(token).getJWTClaimsSet().getStringClaim("session"), getCurrentUser());
-            return errorService.success("Unauthorized");
+            return responseService.success("Unauthorized");
         }catch (Exception ex){
             authLog.error(ex.getMessage());
-            throw new InternalExceptionResponse(ex.getMessage(), errorService.error(ex.getMessage()));
+            throw new InternalExceptionResponse(ex.getMessage(), responseService.error(ex.getMessage()));
         }
     }
 }

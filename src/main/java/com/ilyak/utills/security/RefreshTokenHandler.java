@@ -1,10 +1,10 @@
 package com.ilyak.utills.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ilyak.entity.User;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.ilyak.entity.responses.exceptions.InternalExceptionResponse;
 import com.ilyak.repository.UserRepository;
-import com.ilyak.service.ErrorService;
+import com.ilyak.service.ResponseService;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTParser;
 import io.micronaut.security.authentication.Authentication;
@@ -28,7 +28,7 @@ public class RefreshTokenHandler implements RefreshTokenPersistence {
     public static final Logger log = LoggerFactory.getLogger(RefreshTokenHandler.class);
 
     @Inject
-    ErrorService errorService;
+    ResponseService responseService;
 
     @Inject
     public UserRepository repository;
@@ -43,16 +43,17 @@ public class RefreshTokenHandler implements RefreshTokenPersistence {
     public Publisher<Authentication> getAuthentication(String refreshToken) {
         try {
             JWT jwt = JWTParser.parse(refreshToken);
-            ObjectMapper om = new ObjectMapper();
+            ObjectMapper om = new ObjectMapper().registerModule(new JavaTimeModule());
             return Flowable.just(new CustomAuthentication(
-                        om.readValue(jwt.getJWTClaimsSet().getClaim("credentials").toString(), User.class),
+                        jwt.getJWTClaimsSet().getStringClaim("uid"),
+                        jwt.getJWTClaimsSet().getStringClaim("name"),
                         om.readValue(jwt.getJWTClaimsSet().getClaim("roles").toString(), Collection.class),
                         om.readValue(jwt.getJWTClaimsSet().getClaim("attributes").toString(), Map.class),
                         jwt.getJWTClaimsSet().getStringClaim("session")
                     )
             );
         }catch (Exception e){
-            throw new InternalExceptionResponse(errorService.error(e.getMessage()));
+            throw new InternalExceptionResponse(responseService.error(e.getMessage()));
         }
     }
 
@@ -63,7 +64,7 @@ public class RefreshTokenHandler implements RefreshTokenPersistence {
             return jwt.getJWTClaimsSet().getStringClaim("login");
 
         } catch (Exception e) {
-            throw new InternalExceptionResponse(errorService.error(e.getMessage()));
+            throw new InternalExceptionResponse(responseService.error(e.getMessage()));
         }
     }
 }

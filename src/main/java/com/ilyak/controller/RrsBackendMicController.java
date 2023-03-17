@@ -1,8 +1,6 @@
 package com.ilyak.controller;
 
-import com.ilyak.controller.BaseController;
 import com.ilyak.entity.responses.DefaultAppResponse;
-import com.ilyak.service.ErrorService;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.*;
 import io.micronaut.scheduling.TaskExecutors;
@@ -22,11 +20,11 @@ public class RrsBackendMicController extends BaseController {
     @SecurityRequirement(name = "BearerAuth")
     @Get(uri = "/try", produces = MediaType.APPLICATION_JSON)
     public DefaultAppResponse index() {
-        return errorService.success();
+        return responseService.success();
     }
     @Secured(SecurityRule.IS_AUTHENTICATED)
     @Get(uri = "/try2")
     public DefaultAppResponse index2() {
-        return errorService.success();
+        return responseService.success();
     }
 }

@@ -1,4 +1,4 @@
-package com.ilyak.entity;
+package com.ilyak.entity.jpa;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;

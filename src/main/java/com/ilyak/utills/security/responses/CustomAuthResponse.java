@@ -1,6 +1,5 @@
 package com.ilyak.utills.security.responses;
 
-import com.ilyak.entity.User;
 import com.ilyak.utills.security.CustomAuthentication;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.authentication.AuthenticationResponse;
@@ -17,16 +16,16 @@ public class CustomAuthResponse implements AuthenticationResponse {
         this.instance = instance;
     }
 
-    public CustomAuthResponse(User credentials) {
-        instance = new CustomAuthentication(credentials);
+    public CustomAuthResponse(String uid, String login) {
+        instance = new CustomAuthentication(uid, login);
     }
 
-    public CustomAuthResponse(User credentials, Collection<String> roles, String sessionUUID) {
-        instance = new CustomAuthentication(credentials, roles, sessionUUID);
+    public CustomAuthResponse(String uid, String login, Collection<String> roles, String sessionUUID) {
+        instance = new CustomAuthentication(uid, login, roles, sessionUUID);
     }
 
-    public CustomAuthResponse(User credentials, Collection<String> roles, Map<String, Object> attributes, String sessionUUID) {
-        instance = new CustomAuthentication(credentials, roles, attributes, sessionUUID);
+    public CustomAuthResponse(String uid, String login, Collection<String> roles, Map<String, Object> attributes, String sessionUUID) {
+        instance = new CustomAuthentication(uid, login, roles, attributes, sessionUUID);
     }
     @Override
     public boolean isAuthenticated() {

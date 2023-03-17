@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Подтверждене регистрации</title>
+    <style>
+        body{
+            display: flex;
+            justify-content: center;
+        }
+
+        header{
+            background-color: whitesmoke;
+            border-radius: 70px;
+            display: flex;
+            justify-content: flex-start;
+            flex-direction: row;
+            align-content: center;
+            width: 100%;
+        }
+        .main{
+            font-family: Inter, sans-serif;
+            font-size: 16px;
+            width: 90%;
+            background-color: rgb(218, 225, 239);
+            height: min-content;
+            padding: 10px;
+        }
+        .logo{
+            padding-left:3% ;
+            width: 200px;
+        }
+
+        .logo-text{
+            display: flex;
+            align-content: center;
+            padding-left: 20px;
+            font-size: 18pt;
+        }
+        .main-content{
+            font-family: Inter;
+            font-size: 14pt;
+        }
+    </style>
+</head>
+<body>
+    <div class="main">
+        <header>
+            <div class="logo">
+                <img width="90%" src="https://ic.wampi.ru/2023/03/16/rrs-logo.png" alt="rrs-logo.png" border="0">
+            </div>
+            <div class="logo-text">
+                <p>Приветствуем нового пользователя нашего агрегатора!</p>
+            </div>
+        </header>
+        <div class="main-content">
+            <p>
+                Для того чтобы продолжить пользоваться нашим сервисом и подтвердить ваш аккаунт, необходимо перейти по ссылке ниже:
+                <a href="[[confirmationLink]]">подтверждение</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

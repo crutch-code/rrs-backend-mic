@@ -1,6 +1,6 @@
 package com.ilyak.service;
 
-import com.ilyak.entity.Files;
+import com.ilyak.entity.jpa.Files;
 import com.ilyak.repository.TransactionalRepository;
 import com.ilyak.utills.security.MD5Util;
 import io.micronaut.context.annotation.Value;
@@ -42,8 +42,8 @@ public class FilesService {
         java.nio.file.Files.copy(file.getInputStream(), path);
         return new Files(
                 transactionalRepository.genOid().orElseThrow(),
-                path.toUri().getPath(),
-                Double.parseDouble(String.valueOf(file.getSize())),
+                path.toString().replace("\\", "/"),
+                Long.parseLong(String.valueOf(file.getSize())),
                 LocalDateTime.now(ZoneId.systemDefault())
         );
     }

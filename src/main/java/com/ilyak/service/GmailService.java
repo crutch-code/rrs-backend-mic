@@ -2,23 +2,18 @@ package com.ilyak.service;
 
 
 import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.auth.oauth2.CredentialRefreshListener;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
-import com.google.api.client.googleapis.auth.oauth2.GoogleRefreshTokenRequest;
-import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.GmailScopes;
-import com.ilyak.controller.AuthController;
 import com.ilyak.entity.responses.exceptions.InternalExceptionResponse;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.runtime.event.ApplicationStartupEvent;
 import io.micronaut.runtime.event.annotation.EventListener;
-import io.micronaut.scheduling.TaskScheduler;
 import io.micronaut.scheduling.annotation.Async;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -27,8 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
-import java.time.Duration;
 import java.util.Collections;
 
 @Singleton
@@ -42,7 +35,7 @@ public class GmailService {
     private String dirPattern;
 
     @Inject
-    private ErrorService errorService;
+    private ResponseService responseService;
 
     @Value("${google.mail.credentials.client-secret}")
     private String secret;
@@ -59,7 +52,7 @@ public class GmailService {
     public Gmail instance(){
         if (instance == null) throw new InternalExceptionResponse(
                 "Gmail service isn't instantiate",
-                errorService.error("Gmail service isn't instantiate")
+                responseService.error("Gmail service isn't instantiate")
         );
         return instance;
     }

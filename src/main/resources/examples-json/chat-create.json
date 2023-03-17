@@ -1,0 +1,8 @@
+{
+  "chat_left_user_recipient": {
+    "oid": "string"
+  },
+  "chat_right_user_recipient": {
+    "oid": "string"
+  }
+}

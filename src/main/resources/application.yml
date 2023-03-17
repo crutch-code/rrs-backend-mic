@@ -1,6 +1,8 @@
 micronaut:
+
   application:
     name: rrsBackendMic
+    default-page-size: 15
   executors:
     io:
       type: fixed
@@ -81,6 +83,13 @@ micronaut:
       enabled: false
       port: 443
       build-self-signed: true
+  views:
+    thymeleaf:
+      enabled: true
+      suffix: .html
+    folder: html-templates/
+
+
 
 datasources:
   default:

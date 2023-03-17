@@ -1,8 +1,6 @@
 package com.ilyak.utills.security;
 
-import com.ilyak.entity.User;
 import io.micronaut.context.annotation.Replaces;
-import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.authentication.ServerAuthentication;
 
 import java.util.*;
@@ -10,7 +8,7 @@ import java.util.*;
 @Replaces(ServerAuthentication.class)
 public class CustomAuthentication extends ServerAuthentication{
 
-    private User credentials;
+    private String uid;
 
     private String sessionUUID;
 
@@ -18,45 +16,41 @@ public class CustomAuthentication extends ServerAuthentication{
 
 
 
-    public CustomAuthentication(User credentials) {
-        super(credentials.getUserEmail(), null, null);
-        this.credentials = credentials;
+    public CustomAuthentication(String uid, String login) {
+        super(login, null, null);
+        this.uid = uid;
         this.sessionUUID = UUID.randomUUID().toString();
     }
 
-    public CustomAuthentication(User credentials, String sessionUUID){
-        super(credentials.getUserEmail(), null, null);
-        this.credentials = credentials;
+    public CustomAuthentication(String uid,String login, String sessionUUID){
+        super(login, null, null);
+        this.uid = uid;
         this.sessionUUID = sessionUUID;
     }
 
-    public CustomAuthentication(User credentials, Collection<String> roles, String sessionUUID) {
-        super(credentials.getUserEmail(), roles, null);
-        this.credentials = credentials;
+    public CustomAuthentication(String uid,String login, Collection<String> roles, String sessionUUID) {
+        super(login, roles, null);
+        this.uid = uid;
         this.sessionUUID = sessionUUID;
     }
 
-    public CustomAuthentication(User credentials, Collection<String> roles, Map<String, Object> attributes, String sessionUUID) {
-        super(credentials.getUserEmail(), roles, attributes);
-        this.credentials = credentials;
+    public CustomAuthentication(String uid,String login, Collection<String> roles, Map<String, Object> attributes, String sessionUUID) {
+        super(login, roles, attributes);
+        this.uid = uid;
         this.sessionUUID = sessionUUID;
     }
 
-    @Override
-    public String getName() {
-        return credentials.getUserEmail();
-    }
 
     public String getSessionUUID() {
         return sessionUUID;
     }
 
-    public User getCredentials() {
-        return credentials;
+    public String getUid() {
+        return uid;
     }
 
-    public void setCredentials(User credentials) {
-        this.credentials = credentials;
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
 }

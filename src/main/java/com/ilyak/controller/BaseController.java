@@ -1,34 +1,34 @@
 package com.ilyak.controller;
 
 
-import com.ilyak.entity.User;
-import com.ilyak.entity.responses.DefaultAppResponse;
-import com.ilyak.entity.responses.exceptions.InternalExceptionResponse;
-import com.ilyak.repository.FilesRepository;
-import com.ilyak.repository.TransactionalRepository;
-import com.ilyak.repository.UserRepository;
+import com.ilyak.entity.jpa.User;
+import com.ilyak.repository.*;
 import com.ilyak.service.EmailService;
-import com.ilyak.service.ErrorService;
+import com.ilyak.service.ResponseService;
 import com.ilyak.service.FilesService;
 import com.ilyak.service.UserLogoutService;
 import com.ilyak.utills.security.CustomAuthentication;
 import io.micronaut.context.annotation.Value;
-import io.micronaut.http.HttpRequest;
-import io.micronaut.http.HttpResponse;
-import io.micronaut.http.annotation.Error;
+import io.micronaut.data.model.Pageable;
+import io.micronaut.http.MediaType;
 import io.micronaut.security.utils.SecurityService;
 import jakarta.inject.Inject;
-
-import java.util.Optional;
 
 
 public class BaseController {
 
     @Inject
     protected TransactionalRepository transactionalRepository;
-
     @Inject
     protected FilesRepository filesRepository;
+    @Inject
+    protected UserRepository userRepository;
+
+    @Inject
+    protected FlatRepository flatRepository;
+
+    @Inject
+    protected PostRepository postRepository;
 
     @Inject
     protected EmailService emailService;
@@ -40,13 +40,14 @@ public class BaseController {
     protected FilesService filesService;
 
     @Inject
-    protected ErrorService errorService;
+    protected ResponseService responseService;
 
-    @Inject
-    protected UserRepository userRepository;
+
     @Inject
     protected UserLogoutService logoutService;
 
+    @Value("${micronaut.application.default-page-size}")
+    protected Integer defaultPageSize;
 
     @Value("${micronaut.router.folder.dir-pattern}")
     protected String dirPattern;
@@ -59,11 +60,33 @@ public class BaseController {
     @Value("${micronaut.router.folder.files.secure-pictures}")
     protected String securePhotos;
 
-    public User getCurrentUser(){
-        return ((CustomAuthentication)securityService.getAuthentication().orElse(null)).getCredentials();
+    public Pageable getPageable(Integer pageNum, Integer pageSize) {
+        return Pageable.from((pageNum != null) ? pageNum : 0, (pageSize != null) ? pageSize : Integer.MAX_VALUE);
     }
-    /*public Optional<User> getCurrentUser(){
-        return userRepository.findByUserNickName(String.valueOf(securityService.username()));
-    }*/
 
+    public User getCurrentUser(){
+        return userRepository.findById(
+                ((CustomAuthentication)securityService.getAuthentication().orElseThrow())
+                        .getUid()
+        ).orElseThrow();
+    }
+
+    public MediaType fileTypeResolver(String filePath){
+        if (filePath == null || filePath.equals("")) throw new RuntimeException("Invalid file name for type resolving");
+
+        switch (filePath.substring(filePath.lastIndexOf(".")+1)){
+            case "jpg" -> {
+                return MediaType.IMAGE_JPEG_TYPE;
+            }
+            case "gif" -> {
+                return MediaType.IMAGE_GIF_TYPE;
+            }
+            case "png" -> {
+                return MediaType.IMAGE_PNG_TYPE;
+            }
+            default -> {
+                return MediaType.APPLICATION_OCTET_STREAM_TYPE;
+            }
+        }
+    }
 }

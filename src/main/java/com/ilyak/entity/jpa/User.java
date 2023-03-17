@@ -1,9 +1,8 @@
-package com.ilyak.entity;
+package com.ilyak.entity.jpa;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.ilyak.entity.jsonviews.Default;
-import com.ilyak.entity.jsonviews.WithPassword;
+import com.ilyak.entity.jsonviews.JsonViewCollector;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.jackson.annotation.JacksonFeatures;
 import org.hibernate.annotations.DynamicInsert;
@@ -15,7 +14,7 @@ import java.util.Set;
 @Entity
 @Table(name = "users", schema = "public")
 @Introspected
-@JsonView(Default.class)
+@JsonView
 @DynamicInsert
 @JacksonFeatures(additionalModules = JavaTimeModule.class)
 public class User extends BaseEntity {
@@ -48,7 +47,7 @@ public class User extends BaseEntity {
     @JsonProperty("user_password")
     @Column(name = "user_password")
     @JsonAlias("userPassword")
-    @JsonView(WithPassword.class)
+    @JsonView(JsonViewCollector.User.WithPassword.class)
     private String userPassword;
 
     @ManyToMany
@@ -56,6 +55,7 @@ public class User extends BaseEntity {
             joinColumns = @JoinColumn(name = "user_oid", referencedColumnName = "oid"),
             inverseJoinColumns = @JoinColumn(name = "file_oid", referencedColumnName = "oid"))
     @JsonInclude
+    @JsonView(JsonViewCollector.User.WithAvatarsList.class)
     private Set<Files> avatars = new java.util.LinkedHashSet<>();
 
     @JsonInclude

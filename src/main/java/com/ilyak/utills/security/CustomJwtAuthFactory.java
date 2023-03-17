@@ -1,8 +1,5 @@
 package com.ilyak.utills.security;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.ilyak.entity.User;
 import com.ilyak.service.UserLogoutService;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTClaimsSet;
@@ -49,6 +46,7 @@ public class CustomJwtAuthFactory implements JwtAuthenticationFactory {
             return userForClaims(claimSet).map(mapper ->
                 new CustomAuthentication(
                             userForClaims(claimSet).orElseThrow(),
+                            nameForClaims(claimSet).orElseThrow(),
                             rolesFinder.resolveRoles(attributes),
                             attributes,
                             sessionUuidForClaims(claimSet).orElseThrow()
@@ -71,9 +69,16 @@ public class CustomJwtAuthFactory implements JwtAuthenticationFactory {
 //    }
 
     @SneakyThrows
-    protected Optional<User> userForClaims(JWTClaimsSet claimsSet){
+    protected Optional<String> userForClaims(JWTClaimsSet claimsSet){
         LOG.info("claims set: " + claimsSet.getClaims().toString());
-        return  Optional.of(new ObjectMapper().registerModule(new JavaTimeModule()).readValue(claimsSet.getClaim("credentials").toString(), User.class));
+        return  Optional.of(
+                claimsSet.getStringClaim("uid")
+        );
+    }
+
+    @SneakyThrows
+    protected Optional<String> nameForClaims(JWTClaimsSet claimsSet){
+        return Optional.of(claimsSet.getStringClaim("name"));
     }
 
     @SneakyThrows

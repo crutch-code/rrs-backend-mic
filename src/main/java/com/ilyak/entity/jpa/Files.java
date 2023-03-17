@@ -1,4 +1,4 @@
-package com.ilyak.entity;
+package com.ilyak.entity.jpa;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -23,7 +23,7 @@ public class Files extends BaseEntity{
     @JsonInclude
     @Column(name = "file_size")
     @JsonProperty(value = "file_size")
-    public Double fileSize;
+    public Long fileSize;
 
     @JsonInclude
     @Column(name = "updated_at")
@@ -32,7 +32,7 @@ public class Files extends BaseEntity{
     public LocalDateTime updatedAt;
 
 
-    public Files(String oid, String filePath, Double fileSize, LocalDateTime updatedAt) {
+    public Files(String oid, String filePath, Long fileSize, LocalDateTime updatedAt) {
         super(oid);
         this.filePath = filePath;
         this.fileSize = fileSize;
@@ -51,11 +51,11 @@ public class Files extends BaseEntity{
         this.filePath = filePath;
     }
 
-    public Double getFileSize() {
+    public Long getFileSize() {
         return fileSize;
     }
 
-    public void setFileSize(Double fileSize) {
+    public void setFileSize(Long fileSize) {
         this.fileSize = fileSize;
     }
 
