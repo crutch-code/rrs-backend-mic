@@ -2,19 +2,18 @@ package com.ilyak.entity.jpa;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import io.micronaut.http.multipart.CompletedPart;
-import io.micronaut.jackson.annotation.JacksonFeatures;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.GenericGenerator;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.ilyak.entity.jsonviews.JsonViewCollector;
 
 import javax.persistence.*;
 
 @MappedSuperclass
+@JsonView(JsonViewCollector.BaseEntity.class)
 public class BaseEntity {
     @Id
     @JsonInclude
     @Column(name= "oid")
+    @JsonView(JsonViewCollector.BaseEntity.Default.class)
     public String oid;
 
     public BaseEntity(String oid) {

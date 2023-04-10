@@ -46,27 +46,5 @@ public class UserLogoutService {
         scheduler.schedule(Duration.ofSeconds(exp), ()-> logout.remove(identity));
     }
 
-//    @EventListener
-//    @Async
-//    public void loginEventListener(final CustomLoginSuccessfulEvent e) {
-//
-//
-//        for(var entry : logout.entrySet()){
-//            if(entry.getValue().equals(e.getCustomAuthentication().getCredentials()));
-//        }
-//
-//    }
-//
-//    @EventListener
-//    @Async
-//    public void tokenValidEventListener(final AccessTokenGeneratedEvent e){
-//        System.out.println(e.toString());
-//    }
-//
-//    @EventListener
-//    @Async
-//    public void logoutEventListener(final LogoutEvent e){
-//        logout.put(e.getCredentials().getUserNickName(), e.getCredentials());
-//    }
 }
 

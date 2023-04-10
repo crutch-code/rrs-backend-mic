@@ -15,17 +15,18 @@ import java.util.Optional;
 public interface ChatRepository extends CrudRepository<Chat, String> {
 
     @Query(value = "update Chat as t " +
-            "set t.lastActivity=:lastActivity, t.lastMessage=:lastMessageOid  " +
+            "set t.lastActivity=:lastActivity  " +
             "where t.oid=:oid"
     )
-    Optional<Chat> updateActivity(String oid, String lastMessageOid, LocalDateTime lastActivity);
+    Optional<Chat> updateActivity(String oid, LocalDateTime lastActivity);
 
     @Query(
-            value = "from Chat as t where t.leftRecipient=:uid or t.rightRecipient=:uid",
-            countQuery = "select count (t) from Chat as t where t.leftRecipient=:uid or t.rightRecipient=:uid"
+            value = "from Chat as t where t.leftRecipient.oid=:uid or t.rightRecipient.oid=:uid",
+            countQuery = "select count (t) from Chat as t where t.leftRecipient.oid=:uid or t.rightRecipient.oid=:uid"
     )
     Page<Chat> findByLeftRecipientOrRightRecipient(String uid, Pageable pageable);
 
-    @Query(value = "select valid_chat(:uid, :chatOid)", nativeQuery = true)
+    @Query(value = "select exists(select from chat as t where t.oid=:chatOid " +
+            "and (t.chat_left_user_recipient=:uid or t.chat_right_user_recipient=:uid))", nativeQuery = true)
     Boolean valid(String uid, String chatOid);
 }

@@ -3,6 +3,8 @@ package com.ilyak.entity.jpa;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.ilyak.entity.jsonviews.JsonViewCollector;
 import io.micronaut.core.annotation.Introspected;
 
 import javax.persistence.Column;
@@ -13,6 +15,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "files", schema = "public")
 @Introspected
+@JsonView(JsonViewCollector.BaseEntity.Default.class)
 public class Files extends BaseEntity{
 
     @JsonInclude()

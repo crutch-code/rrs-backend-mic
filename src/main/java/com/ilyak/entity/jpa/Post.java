@@ -1,17 +1,26 @@
 package com.ilyak.entity.jpa;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.ilyak.entity.jsonviews.JsonViewCollector;
 import io.micronaut.core.annotation.Introspected;
+import io.micronaut.jackson.annotation.JacksonFeatures;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Table(name = "post", schema = "public")
 @Introspected
-@JsonView(JsonViewCollector.Default.class)
+@JsonView(JsonViewCollector.Post.BasicView.class)
+@DynamicInsert
+@JacksonFeatures(additionalModules = JavaTimeModule.class)
 public class Post extends BaseEntity {
 
     @Schema(name = "post_status")
@@ -38,11 +47,12 @@ public class Post extends BaseEntity {
     @JoinColumn(name = "post_creator_oid")
     @JsonProperty(value = "post_creator")
     @Schema(name = "post_creator")
+
     private User postCreator;
 
     @ManyToOne
     @JoinColumn(name = "post_moderator_oid", updatable = false)
-    @JsonView(JsonViewCollector.WithModerator.class)
+    @JsonView({JsonViewCollector.Post.WithModerator.class})
     @JsonProperty(value = "post_moderator")
     @Schema(name = "post_moderator")
     private User postModerator;
@@ -53,7 +63,22 @@ public class Post extends BaseEntity {
     @Schema(name = "post_flat")
     private Flat postFlat;
 
-    public Post(String oid, String postStatus, Double price, String postTitle, String postInformation, User postCreator, User postModerator, Flat postFlat) {
+    @Column(name = "post_creation_date")
+    @JsonProperty(value = "post_creation_date")
+    @Schema(name = "post_creation_date")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime postCreationDate;
+
+    @ManyToMany
+    @JoinTable(name = "post_photos",
+            joinColumns = @JoinColumn(name = "post_oid", referencedColumnName = "oid"),
+            inverseJoinColumns = @JoinColumn(name = "file_oid", referencedColumnName = "oid"))
+    @JsonInclude
+    @JsonProperty(value = "post_photos")
+    @Schema(name = "post_photos")
+    private Set<Files> postPhotos = new java.util.LinkedHashSet<>();
+
+    public Post(String oid, String postStatus, Double price, String postTitle, String postInformation, User postCreator, User postModerator, Flat postFlat, LocalDateTime postCreationDate, Set<Files> postPhotos) {
         super(oid);
         this.postStatus = postStatus;
         this.price = price;
@@ -62,9 +87,19 @@ public class Post extends BaseEntity {
         this.postCreator = postCreator;
         this.postModerator = postModerator;
         this.postFlat = postFlat;
+        this.postCreationDate = postCreationDate;
+        this.postPhotos = postPhotos;
     }
 
     public Post() {
+    }
+
+    public LocalDateTime getPostCreationDate() {
+        return postCreationDate;
+    }
+
+    public void setPostCreationDate(LocalDateTime postCreationDate) {
+        this.postCreationDate = postCreationDate;
     }
 
     public String getPostStatus() {
@@ -121,5 +156,13 @@ public class Post extends BaseEntity {
 
     public void setPostFlat(Flat postFlat) {
         this.postFlat = postFlat;
+    }
+
+    public Set<Files> getPostPhotos() {
+        return postPhotos;
+    }
+
+    public void setPostPhotos(Set<Files> postPhotos) {
+        this.postPhotos = postPhotos;
     }
 }

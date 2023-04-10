@@ -29,7 +29,9 @@ import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Controller("/api/flat")
 @Tag(name = "Контроллер квартир арендодателя",
@@ -47,15 +49,15 @@ public class FlatController extends BaseController {
     @Post(uri = "/add", consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON_STREAM)
     @SecurityRequirement(name = "BearerAuth")
     @JsonView(JsonViewCollector.Default.class)
-    public HttpResponse<DefaultAppResponse> addFlat(@Part @Parameter(name="Flats array") Publisher<Flat> flats){
+    public HttpResponse<DefaultAppResponse> addFlat(@Body List<Flat> flats){
         try{
-
-            return (HttpResponse<DefaultAppResponse>) Flowable.fromPublisher(flats).observeOn(Schedulers.io()).map(it -> {
-                it.setFlatOwner(getCurrentUser());
-                flatRepository.save(it);
-                return HttpResponse.ok(responseService.success("Flat added successfully"));
-            }).first(HttpResponse.serverError(responseService.error("Error")));
-
+            flats.stream().map(m-> {
+                m.setFlatOwner(getCurrentUser());
+                m.setOid(transactionalRepository.genOid().orElseThrow());
+                return m;
+            }).collect(Collectors.toList());
+            flatRepository.saveAll(flats);
+            return HttpResponse.ok(responseService.success("квартиры добвалены"));
         }catch (Exception ex){
             logger.error(ex.getMessage());
             throw new InternalExceptionResponse(ex.getMessage(), responseService.error(ex.getMessage()));
@@ -66,7 +68,7 @@ public class FlatController extends BaseController {
     @Operation(summary = "Удаление квратиры")
     @Delete(uri = "/delete{?oid}", produces = MediaType.APPLICATION_JSON_STREAM)
     @SecurityRequirement(name = "BearerAuth")
-    public HttpResponse<DefaultAppResponse> deleteFlat(@QueryValue @Parameter(name = "Flat id") Optional<String> oid){
+    public HttpResponse<DefaultAppResponse> deleteFlat(@QueryValue Optional<String> oid){
         try{
             flatRepository.deleteById(oid.orElseThrow());
             return HttpResponse.ok(responseService.success("Flat successful deleted"));
@@ -80,15 +82,16 @@ public class FlatController extends BaseController {
     @Operation(summary = "Получение списка кваритр пользователя")
     @Get(uri = "/get{?page_num,page_size}", produces = MediaType.APPLICATION_JSON_STREAM)
     @SecurityRequirement(name = "BearerAuth")
+    @JsonView(JsonViewCollector.Flat.BasicView.class)
     public HttpResponse<Page<Flat>> getFlats(
-            @QueryValue @Parameter(name = "Номер страницы") @Nullable Integer page_num,
-            @QueryValue @Parameter(name = "Размер страницы") @Nullable Integer page_size
+            @QueryValue @Nullable Integer page_num,
+            @QueryValue @Nullable Integer page_size
     ){
         try{
             return HttpResponse.ok(
                     flatRepository.findByFlatOwnerOid(
                             getCurrentUser().getOid(),
-                            Pageable.from(getPageable(page_num, page_size))
+                            getPageable(page_num, page_size)
                     )
             );
         }catch (Exception ex){

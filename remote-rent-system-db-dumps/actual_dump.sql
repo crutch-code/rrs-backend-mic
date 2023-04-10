@@ -420,7 +420,7 @@ ALTER TABLE ONLY public.contract
 --
 
 ALTER TABLE ONLY public.contract
-    ADD CONSTRAINT contract_users_creator_fk FOREIGN KEY (contract_creator_oid) REFERENCES public.users(oid);
+    ADD CONSTRAINT contract_users_creator_fk FOREIGN KEY (contract_renter_oid) REFERENCES public.users(oid);
 
 
 --
@@ -429,7 +429,7 @@ ALTER TABLE ONLY public.contract
 --
 
 ALTER TABLE ONLY public.contract
-    ADD CONSTRAINT contract_users_signatory_fk FOREIGN KEY (contract_signatory_oid) REFERENCES public.users(oid);
+    ADD CONSTRAINT contract_users_signatory_fk FOREIGN KEY (contract_owner_oid) REFERENCES public.users(oid);
 
 
 --

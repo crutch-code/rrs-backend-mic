@@ -15,8 +15,8 @@ import java.util.Optional;
 public interface FlatRepository extends CrudRepository<Flat, String> {
 
     @Query(
-            value = "from Flat as t where t.flatOwner=:owner",
-            countQuery = "select count(t) from Flat as t where t.flatOwner=:owner"
+            value = "from Flat as t where t.flatOwner.oid=:owner order by t.flatAddress",
+            countQuery = "select count(t) from Flat as t where t.flatOwner.oid=:owner"
     )
     Page<Flat> findByFlatOwnerOid(String owner, Pageable pageable);
 }

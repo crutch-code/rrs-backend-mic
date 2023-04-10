@@ -96,7 +96,7 @@ public class RegisterController extends BaseController{
             @QueryValue Optional<String> token
     ){
         try {
-            if (!registerService.valid(JWTParser.parse(token.orElseThrow())) ){
+            if (!generatorService.valid(token.orElseThrow()) ){
                 return HttpResponse.ok(
                     CollectionUtils.mapOf("success", false)
                 );

@@ -33,24 +33,12 @@ import java.util.Map;
 public class RegisterService {
 
     @Inject
+    TokenGeneratorService generator;
+
+    @Inject
     TokenGenerator tokenGenerator;
 
 
-    String generateToken(String oid){
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("oid", oid);
-        claims.put("creation", LocalDateTime.now(ZoneId.systemDefault()).toString());
-        claims.put("expiresIn", 1); //день
-        return tokenGenerator.generateToken(claims).orElseThrow();
-    }
-
-    @SneakyThrows
-    public Boolean valid(JWT token){
-        return  LocalDateTime
-                .parse(token.getJWTClaimsSet().getStringClaim("creation"))
-                .plusDays(token.getJWTClaimsSet().getIntegerClaim("expiresIn"))
-                .isAfter(LocalDateTime.now(ZoneId.systemDefault()));
-    }
 
     //todo: вынести хост
     @SneakyThrows
@@ -58,7 +46,10 @@ public class RegisterService {
         return IOUtils.toString(ClassLoaderUtils.findResourceAsStream(
                 "html-templates/confirm.html"),
                 Charset.forName("UTF-8")
-                        ).replace("[[confirmationLink]]", "crutch-code.ru/api/reg/confirm?token=" + generateToken(userOid)
+                        ).replace("[[confirmationLink]]", "crutch-code.ru/api/reg/confirm?token="
+                + generator.generate(
+                        "auth", "register", userOid
+                )
         );
     }
 }

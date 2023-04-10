@@ -4,6 +4,7 @@ import com.ilyak.entity.jpa.Files;
 import com.ilyak.entity.jpa.User;
 import com.ilyak.entity.responses.DefaultAppResponse;
 import com.ilyak.entity.responses.exceptions.InternalExceptionResponse;
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.*;
@@ -27,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.List;
 import java.util.Optional;
 
 @Controller("/api/files")
@@ -62,8 +64,61 @@ public class FileController extends BaseController{
     }
 
     @ExecuteOn(TaskExecutors.IO)
+    @Operation(summary = "Adding user avatars")
+    @Post(uri = "/post/add{?post_oid}", consumes = MediaType.MULTIPART_FORM_DATA, produces = MediaType.APPLICATION_JSON_STREAM)
+    @SecurityRequirement(name = "BearerAuth")
+    @Secured(SecurityRule.IS_AUTHENTICATED)
+    public HttpResponse<DefaultAppResponse> addPostPhotos(
+            @Part Publisher<CompletedFileUpload> photos,
+            @QueryValue Optional<String> post_oid
+    ){
+        try{
+            com.ilyak.entity.jpa.Post post = postRepository.findById(post_oid.orElseThrow()).orElseThrow();
+            Flowable.fromPublisher(photos).subscribe(emitted -> {
+                Files target = filesService.save(emitted, filesService.getDirPattern() + filesService.getPostPhotos());
+                filesRepository.save(target);
+                post.getPostPhotos().add(target);
+            });
+            postRepository.update(post);
+            return HttpResponse.ok(responseService.success("фотографии к посту загружены"));
+        }catch (Exception ex){
+            logger.error(ex.getMessage());
+            throw new InternalExceptionResponse(ex.getMessage(), responseService.error(ex.getMessage()));
+        }
+    }
+
+
+    @ExecuteOn(TaskExecutors.IO)
+    @Operation(summary = "Adding user avatars")
+    @Patch(uri = "/post/update{?post_oid}", consumes = MediaType.MULTIPART_FORM_DATA, produces = MediaType.APPLICATION_JSON_STREAM)
+    @SecurityRequirement(name = "BearerAuth")
+    @Secured(SecurityRule.IS_AUTHENTICATED)
+    public HttpResponse<DefaultAppResponse> updPostPhotos(
+            @Part Publisher<CompletedFileUpload> photos,
+            @Part List<String> delete_oids,
+            @QueryValue Optional<String> post_oid
+    ){
+        try{
+            com.ilyak.entity.jpa.Post post = postRepository.findById(post_oid.orElseThrow()).orElseThrow();
+            if(delete_oids!= null) delete_oids.forEach(it -> {
+                post.getPostPhotos().stream();
+            });
+            Flowable.fromPublisher(photos).subscribe(emitted -> {
+                Files target = filesService.save(emitted, filesService.getDirPattern() + filesService.getPostPhotos());
+                filesRepository.save(target);
+                post.getPostPhotos().add(target);
+            });
+            postRepository.update(post);
+            return HttpResponse.ok(responseService.success("фотографии к посту загружены"));
+        }catch (Exception ex){
+            logger.error(ex.getMessage());
+            throw new InternalExceptionResponse(ex.getMessage(), responseService.error(ex.getMessage()));
+        }
+    }
+
+    @ExecuteOn(TaskExecutors.IO)
     @Operation(summary = "Getting user avatars")
-    @Get(uri = "/avatar/get/oid", produces = MediaType.MULTIPART_FORM_DATA)
+    @Get(uri = "/get/oid", produces = MediaType.MULTIPART_FORM_DATA)
     @SecurityRequirement(name = "BearerAuth")
     @Secured(SecurityRule.IS_AUTHENTICATED)
     public SystemFile getAvatarByOid(@QueryValue(value = "file_oid") @Parameter Optional<String> oid){
@@ -77,7 +132,7 @@ public class FileController extends BaseController{
 
             return new SystemFile(
                                 target,
-                                fileTypeResolver(target.getName())
+                                mediaTypeFileResolver(target.getName())
                     );
 
         }catch (Exception ex){
@@ -88,7 +143,7 @@ public class FileController extends BaseController{
 
     @ExecuteOn(TaskExecutors.IO)
     @Operation(summary = "Getting user avatars")
-    @Get(uri = "/avatar/get/path", produces = MediaType.MULTIPART_FORM_DATA)
+    @Get(uri = "/get/path", produces = MediaType.MULTIPART_FORM_DATA)
     @SecurityRequirement(name = "BearerAuth")
     @Secured(SecurityRule.IS_AUTHENTICATED)
     public SystemFile getAvatarByPath(@QueryValue(value = "file_path") @Parameter Optional<String> path){
@@ -102,12 +157,47 @@ public class FileController extends BaseController{
 
             return new SystemFile(
                     target,
-                    fileTypeResolver(target.getName())
+                    mediaTypeFileResolver(target.getName())
             );
 
         }catch (Exception ex){
             logger.error(ex.getMessage());
             throw new InternalExceptionResponse(ex.getMessage(), responseService.error(ex.getMessage()));
         }
+
     }
+
+
+    @ExecuteOn(TaskExecutors.IO)
+    @Operation(summary = "Удаление конкретного файла")
+    @Delete(uri = "/delete/{type}", produces = MediaType.APPLICATION_JSON)
+    @SecurityRequirement(name = "BearerAuth")
+    @Secured(SecurityRule.IS_AUTHENTICATED)
+    public HttpResponse<DefaultAppResponse> deleteFile(
+            @PathVariable String type,
+            @QueryValue Optional<String> oid,
+            @QueryValue Optional<String> path
+    ){
+        try{
+            Files metha = null;
+
+            if (oid.isPresent())
+                metha = filesRepository.findById(oid.get()).orElseThrow();
+
+            if (path.isPresent())
+                metha = filesRepository.findByFilePath(path.get()).orElseThrow();
+
+            if(metha == null)
+                throw new RuntimeException("Файла с таким OID, или PATH не существует ");
+            filesService.delete(metha, type);
+            return HttpResponse.ok(responseService.success("файл "+ metha.getFilePath() + " удалён"));
+
+        }catch (Exception ex){
+            logger.error(ex.getMessage());
+            throw new InternalExceptionResponse(ex.getMessage(), responseService.error(ex.getMessage()));
+        }
+
+    }
+
+
 }

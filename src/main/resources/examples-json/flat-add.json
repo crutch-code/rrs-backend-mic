@@ -1,0 +1,31 @@
+
+[
+    {
+      "flat_address": "ул. Пушкина д.1 кв.1",
+      "square": 65,
+      "rooms_count": 1,
+      "flat_x_map_cord": 0,
+      "flat_y_map_cord": 0
+    },
+    {
+      "flat_address": "ул. Пушкина д.1 кв.2",
+      "square": 65,
+      "rooms_count": 2,
+      "flat_x_map_cord": 0,
+      "flat_y_map_cord": 0
+    },
+    {
+      "flat_address": "ул. Пушкина д.1 кв.3",
+      "square": 132,
+      "rooms_count": 4,
+      "flat_x_map_cord": 0,
+      "flat_y_map_cord": 0
+    },
+    {
+      "flat_address": "ул. Пушкина д.1 кв.4",
+      "square": 45,
+      "rooms_count": 1,
+      "flat_x_map_cord": 0,
+      "flat_y_map_cord": 0
+    }
+]

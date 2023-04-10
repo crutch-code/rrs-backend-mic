@@ -3,7 +3,7 @@ package com.ilyak.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.ilyak.entity.jsonviews.JsonViewCollector;
-import com.ilyak.entity.requests.security.RefreshTokenRequest;
+import com.ilyak.entity.requests.security.TokenRequest;
 import com.ilyak.entity.responses.DefaultAppResponse;
 import com.ilyak.entity.responses.exceptions.InternalExceptionResponse;
 import com.ilyak.service.UserLogoutService;
@@ -99,7 +99,7 @@ public class AuthController extends BaseController {
     @SecurityRequirement(name = "BearerAuth")
     @Secured(SecurityRule.IS_ANONYMOUS)
     @Schema(anyOf = {AccessRefreshToken.class})
-    public @NonNull Flowable<MutableHttpResponse<?>> refresh(@Valid @Body RefreshTokenRequest refresh, HttpRequest<?> request) {
+    public @NonNull Flowable<MutableHttpResponse<?>> refresh(@Valid @Body TokenRequest refresh, HttpRequest<?> request) {
         if(logoutService.isLogout(JWTParser.parse(refresh.getToken()).getJWTClaimsSet().getStringClaim("session")))
             throw new InternalExceptionResponse("That user already logged out", responseService.error("That user already logged out"));
         return Flowable.fromPublisher(

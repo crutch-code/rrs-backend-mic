@@ -11,8 +11,8 @@ import io.micronaut.data.repository.CrudRepository;
 @Repository
 public interface MessageRepository extends CrudRepository<Message, String> {
 
-    @Query(value = "from Message as t where t.messageChat=:chatOid order by t.messageSendTime",
-        countQuery = "select count (t) from Message as t where t.messageChat=:chatOid order by t.messageSendTime"
+    @Query(value = "from Message as t where t.messageChat.oid=:chatOid order by t.messageSendTime",
+        countQuery = "select count (t) from Message as t where t.messageChat.oid=:chatOid"
     )
     Page<Message> getMessageByMessageChat(String chatOid, Pageable pageable);
 }

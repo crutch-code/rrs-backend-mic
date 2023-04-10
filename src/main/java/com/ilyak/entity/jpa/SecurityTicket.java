@@ -28,7 +28,6 @@ public class SecurityTicket  extends BaseEntity{
     @Schema(name = "updated_at")
     private LocalDateTime updatedAt;
 
-
     @ManyToMany
     @JoinTable(name = "security_ticket_photos",
             joinColumns = @JoinColumn(name = "security_ticket_oid", referencedColumnName = "oid"),

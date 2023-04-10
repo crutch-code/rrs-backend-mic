@@ -20,7 +20,22 @@ public class ResponseService {
 
     //internals codes
 
-    public static  final int NOT_IMPLEMENTED_YET = 1001;
+    public static  final int NOT_IMPLEMENTED_YET = 601;
+
+
+    //web socket codes
+
+    public static final int WEB_SOCKET_FORBIDDEN = 4003;
+
+    public static final int WEB_SOCKET_UNAUTHORIZED = 4001;
+
+    public static final int WEB_SOCKET_NORMAL = 1000;
+
+    //web socket internal codes
+
+    public static final int WEB_SOCKET_FAIL_RESOLVING_MESSAGE = 5000;
+
+
 
 
 
@@ -104,4 +119,30 @@ public class ResponseService {
                 ServerRequestContext.currentRequest().map(m-> m.getPath()).orElse(null)
         );
     }
+
+    public DefaultAppResponse webSocketForbidden(){
+        return  new DefaultAppResponse(
+                WEB_SOCKET_FORBIDDEN,
+                "Доступ запрещён",
+                ServerRequestContext.currentRequest().map(m-> m.getPath()).orElse(null)
+        );
+    }
+
+    public DefaultAppResponse webSocketSuccess(String message){
+        return  new DefaultAppResponse(
+                WEB_SOCKET_NORMAL,
+                "Действие успешно: " + message,
+                ServerRequestContext.currentRequest().map(m-> m.getPath()).orElse(null)
+        );
+    }
+
+    public DefaultAppResponse webSocketFailResolve(String message){
+        return  new DefaultAppResponse(
+                WEB_SOCKET_FAIL_RESOLVING_MESSAGE,
+                "Произошла ошибка переобразомания push сообщения: " + message,
+                ServerRequestContext.currentRequest().map(m-> m.getPath()).orElse(null)
+        );
+    }
+
+
 }

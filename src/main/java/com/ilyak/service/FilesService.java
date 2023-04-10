@@ -1,7 +1,11 @@
 package com.ilyak.service;
 
 import com.ilyak.entity.jpa.Files;
+import com.ilyak.entity.responses.exceptions.InternalExceptionResponse;
+import com.ilyak.repository.FilesRepository;
+import com.ilyak.repository.PostRepository;
 import com.ilyak.repository.TransactionalRepository;
+import com.ilyak.repository.UserRepository;
 import com.ilyak.utills.security.MD5Util;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.http.multipart.CompletedFileUpload;
@@ -10,6 +14,7 @@ import io.micronaut.runtime.event.annotation.EventListener;
 import io.micronaut.scheduling.annotation.Async;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import lombok.SneakyThrows;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,6 +29,17 @@ public class FilesService {
 
     @Inject
     TransactionalRepository transactionalRepository;
+    @Inject
+    ResponseService responseService;
+
+    @Inject
+    FilesRepository filesRepository;
+
+    @Inject
+    PostRepository postRepository;
+
+    @Inject
+    UserRepository userRepository;
 
 
     @Value("${micronaut.router.folder.dir-pattern}")
@@ -52,6 +68,10 @@ public class FilesService {
         return MD5Util.getMD5(old + System.currentTimeMillis()) + old.substring(old.lastIndexOf("."));
     }
 
+    public String uniqueName(String old, String format) throws NoSuchAlgorithmException {
+        return MD5Util.getMD5(old + System.currentTimeMillis()) + format;
+    }
+
     @Async
     @EventListener
     public void initDirs(ApplicationStartupEvent e){
@@ -62,6 +82,18 @@ public class FilesService {
                 new File(dirPattern + documents),
                 new File(dirPattern + securePhotos)
         ).forEach(File::mkdirs);
+    }
+
+    @SneakyThrows
+    public void delete(Files target, String type){
+        String targetTable;
+        switch (type){
+            case "post_photos" -> targetTable = "post_photos";
+            case "avatar"-> targetTable = "users_avatar_file";
+            default -> throw new InternalExceptionResponse("Неправильный тип запроса на удаление", responseService.error("Неправильный тип запроса на удаление") );
+        }
+        transactionalRepository.deleteFile(target.getOid(), null, targetTable);
+        java.nio.file.Files.deleteIfExists(Path.of(target.getFilePath()));
     }
 
     public String getDirPattern() {

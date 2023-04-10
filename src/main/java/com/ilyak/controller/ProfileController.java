@@ -44,7 +44,7 @@ import java.util.Optional;
 @Validated
 @SecurityScheme(name = "BearerAuth", type = SecuritySchemeType.HTTP, scheme = "bearer", bearerFormat = "jwt")
 public class ProfileController extends BaseController{
-    public static final Logger logger = LoggerFactory.getLogger(AuthController.class);
+    public static final Logger logger = LoggerFactory.getLogger(ProfileController.class);
 
     @ExecuteOn(TaskExecutors.IO)
     @Operation(summary = "Infos about authored user")
@@ -107,6 +107,31 @@ public class ProfileController extends BaseController{
             throw new InternalExceptionResponse(ex.getMessage(), responseService.error(ex.getMessage()));
         }
     }
+
+    @ExecuteOn(TaskExecutors.IO)
+    @Operation(summary = "Phone")
+    @Patch(uri = "/contact/{type}/change{?link}", produces = MediaType.APPLICATION_JSON_STREAM)
+    @SecurityRequirement(name = "BearerAuth")
+    @Secured(SecurityRule.IS_AUTHENTICATED)
+    public HttpResponse<DefaultAppResponse> changeTelegramLink(
+            @QueryValue Optional<String> link,
+            @PathVariable String type
+    ){
+        try{
+            User user = getCurrentUser();
+            switch (type){
+                case "telegram" -> user.setTelegramLink(link.orElseThrow());
+                case "whats_up" -> user.setWhatsUpLink(link.orElseThrow());
+                default -> throw new RuntimeException("Не верный тип контакта");
+            }
+            userRepository.update(user);
+            return HttpResponse.ok(responseService.success("Ссылка типа: " + type + "установлена"));
+        }catch (Exception ex){
+            logger.error(ex.getMessage());
+            throw new InternalExceptionResponse(ex.getMessage(), responseService.error(ex.getMessage()));
+        }
+    }
+
 
 
 

@@ -3,10 +3,7 @@ package com.ilyak.controller;
 
 import com.ilyak.entity.jpa.User;
 import com.ilyak.repository.*;
-import com.ilyak.service.EmailService;
-import com.ilyak.service.ResponseService;
-import com.ilyak.service.FilesService;
-import com.ilyak.service.UserLogoutService;
+import com.ilyak.service.*;
 import com.ilyak.utills.security.CustomAuthentication;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.data.model.Pageable;
@@ -34,7 +31,12 @@ public class BaseController {
     protected EmailService emailService;
 
     @Inject
+    protected TokenGeneratorService generatorService;
+    @Inject
     protected SecurityService securityService;
+
+    @Inject
+    protected PushService pushService;
 
     @Inject
     protected FilesService filesService;
@@ -71,7 +73,12 @@ public class BaseController {
         ).orElseThrow();
     }
 
-    public MediaType fileTypeResolver(String filePath){
+    public String getUserId(){
+        return ((CustomAuthentication)securityService.getAuthentication().orElseThrow())
+                .getUid();
+    }
+
+    public MediaType mediaTypeFileResolver(String filePath){
         if (filePath == null || filePath.equals("")) throw new RuntimeException("Invalid file name for type resolving");
 
         switch (filePath.substring(filePath.lastIndexOf(".")+1)){

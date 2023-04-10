@@ -7,13 +7,16 @@ import io.micronaut.core.annotation.Introspected;
 import javax.validation.constraints.NotBlank;
 
 @Introspected
-public class RefreshTokenRequest {
+public class TokenRequest {
 
     @NotBlank
     @NotNull
     @JsonAlias({"token, refresh_token"})
     protected String token;
 
+    public TokenRequest(String token) {
+        this.token = token;
+    }
 
     public String getToken() {
         return token;

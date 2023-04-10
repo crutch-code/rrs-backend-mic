@@ -5,6 +5,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.ilyak.entity.jsonviews.JsonViewCollector;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.jackson.annotation.JacksonFeatures;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
@@ -14,7 +15,7 @@ import java.util.Set;
 @Entity
 @Table(name = "users", schema = "public")
 @Introspected
-@JsonView
+@JsonView(JsonViewCollector.User.BasicView.class)
 @DynamicInsert
 @JacksonFeatures(additionalModules = JavaTimeModule.class)
 public class User extends BaseEntity {
@@ -70,10 +71,27 @@ public class User extends BaseEntity {
     @JsonAlias("userIsConfirm")
     private Boolean userIsConfirm;
 
-    public User(
-            String oid, String userName,
-            LocalDate userBirthday, LocalDate userRegDate, String userEmail, String userPassword, Set<Files> avatars,
-            String userPhoneNumber, Boolean userIsConfirm
+    @JsonInclude
+    @JsonProperty("user_telegram_link")
+    @Column(name = "user_telegram_link", nullable = false)
+    @Schema(name = "user_telegram_link")
+    private String telegramLink;
+
+    @JsonInclude
+    @JsonProperty("user_whatsup_link")
+    @Column(name = "user_whatsup_link", nullable = false)
+    @Schema(name = "user_whatsup_link")
+    private String whatsUpLink;
+
+    @JsonInclude
+    @JsonProperty("user_rating")
+    @Column(name = "user_rating", nullable = false)
+    @Schema(name = "user_rating")
+    private Double rating;
+
+    public User(String oid, String userName, LocalDate userBirthday, LocalDate userRegDate, String userEmail,
+                String userPassword, Set<Files> avatars, String userPhoneNumber, Boolean userIsConfirm, String telegramLink,
+                String whatsUpLink, Double rating
     ) {
         super(oid);
         this.userName = userName;
@@ -84,6 +102,9 @@ public class User extends BaseEntity {
         this.avatars = avatars;
         this.userPhoneNumber = userPhoneNumber;
         this.userIsConfirm = userIsConfirm;
+        this.telegramLink = telegramLink;
+        this.whatsUpLink = whatsUpLink;
+        this.rating = rating;
     }
 
     public User() {
@@ -152,5 +173,29 @@ public class User extends BaseEntity {
 
     public void setUserPhoneNumber(String userPhoneNumber) {
         this.userPhoneNumber = userPhoneNumber;
+    }
+
+    public String getTelegramLink() {
+        return telegramLink;
+    }
+
+    public void setTelegramLink(String telegramLink) {
+        this.telegramLink = telegramLink;
+    }
+
+    public String getWhatsUpLink() {
+        return whatsUpLink;
+    }
+
+    public void setWhatsUpLink(String whatsUpLink) {
+        this.whatsUpLink = whatsUpLink;
+    }
+
+    public Double getRating() {
+        return rating;
+    }
+
+    public void setRating(Double rating) {
+        this.rating = rating;
     }
 }

@@ -66,14 +66,16 @@ public class ChatService {
         return null;
     }
 
-    public void saveMessage(Message message){
+    public Message saveMessage(Message message){
         message.setOid(transactionalRepository.genOid().orElseThrow(()->new RuntimeException("Ошибка генерации идентификатора")));
-        messageRepository.save(message);
+        message.setMessageSendTime(LocalDateTime.now(ZoneId.systemDefault()));
+        Message saved = messageRepository.save(message);
         chatRepository.updateActivity(
                 message.getMessageChat().getOid(),
-                message.getOid(),
                 LocalDateTime.now(ZoneId.systemDefault())
         );
+
+        return saved;
     }
 
     public Optional<Chat> getById(String oid){
@@ -88,18 +90,18 @@ public class ChatService {
         return chatRepository.findByLeftRecipientOrRightRecipient(uid, pageable);
     }
 
-    public void addSession(String uid, WebSocketSession session){
-        if (!sessionContainer.containsKey(uid))
-            sessionContainer.put(uid, CollectionUtils.mapOf(session.getId(), session));
-        sessionContainer.get(uid).put(session.getId(), session);
+    public void addSession(String chat, String uid, WebSocketSession session){
+        if(!sessionContainer.containsKey(chat))
+            sessionContainer.put(chat, CollectionUtils.mapOf(uid, session));
+        sessionContainer.get(chat).put(uid, session);
     }
 
-    public void removeSession(String uid, WebSocketSession session){
-        if (sessionContainer.containsKey(uid))
-            sessionContainer.get(uid).remove(session.getId());
+    public void removeSession( String chat, String uid){
+        if (sessionContainer.containsKey(chat))
+            sessionContainer.get(chat).remove(uid);
     }
 
-    public Optional<WebSocketSession> getSession(String uid, WebSocketSession session){
-        return Optional.of(sessionContainer.get(uid).get(session.getId()));
+    public WebSocketSession getSession(String chat, String uid){
+        return sessionContainer.get(chat).get(uid);
     }
 }

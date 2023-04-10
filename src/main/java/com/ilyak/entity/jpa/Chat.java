@@ -1,48 +1,49 @@
 package com.ilyak.entity.jpa;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.ilyak.entity.jsonviews.JsonViewCollector;
 import io.micronaut.core.annotation.Introspected;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "chat", schema = "public")
 @Introspected
-@JsonView
+@JsonView(JsonViewCollector.Chat.BasicView.class)
 public class Chat extends BaseEntity{
 
     @Column(name = "chat_creation_date")
     @JsonProperty(value = "chat_creation_date")
     @Schema(name = "chat_creation_date")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime creationDate;
 
     @Column(name = "chat_last_activity")
     @JsonProperty(value = "chat_last_activity")
     @Schema(name = "chat_last_activity")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime lastActivity;
 
     @ManyToOne
     @JoinColumn(name = "chat_left_user_recipient")
     @JsonProperty(value = "chat_left_user_recipient")
     @Schema(name = "chat_left_user_recipient")
+    @JsonView(JsonViewCollector.BaseEntity.Default.class)
     private User leftRecipient;
 
     @ManyToOne
     @JoinColumn(name = "chat_right_user_recipient")
     @JsonProperty(value = "chat_right_user_recipient")
     @Schema(name = "chat_right_user_recipient")
+    @JsonView(JsonViewCollector.BaseEntity.Default.class)
     private User rightRecipient;
 
-    @ManyToOne
-    @JoinColumn(name = "chat_latest_message")
-    @JsonProperty(value = "chat_latest_message")
-    @Schema(name = "chat_latest_message")
-    private Message lastMessage;
+
 
     public Chat() {
     }
@@ -53,7 +54,6 @@ public class Chat extends BaseEntity{
         this.lastActivity = lastActivity;
         this.leftRecipient = leftRecipient;
         this.rightRecipient = rightRecipient;
-        this.lastMessage = lastMessage;
     }
 
     public LocalDateTime getCreationDate() {
@@ -86,13 +86,5 @@ public class Chat extends BaseEntity{
 
     public void setRightRecipient(User rightRecipient) {
         this.rightRecipient = rightRecipient;
-    }
-
-    public Message getLastMessage() {
-        return lastMessage;
-    }
-
-    public void setLastMessage(Message lastMessage) {
-        this.lastMessage = lastMessage;
     }
 }
