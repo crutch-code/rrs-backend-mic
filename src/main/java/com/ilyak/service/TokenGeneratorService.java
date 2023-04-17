@@ -23,7 +23,7 @@ public class TokenGeneratorService {
                         "resource", resource,
                         "uid", uid,
                         "creation", LocalDateTime.now(ZoneId.systemDefault()).toString(),
-                        "expired", LocalDateTime.now(ZoneId.systemDefault()).plusDays(1)
+                        "expired", LocalDateTime.now(ZoneId.systemDefault()).plusDays(1).toString()
                 )
         ).orElseThrow();
     }

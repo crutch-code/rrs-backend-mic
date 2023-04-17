@@ -47,7 +47,7 @@ public class RefreshTokenHandler implements RefreshTokenPersistence {
             return Flowable.just(new CustomAuthentication(
                         jwt.getJWTClaimsSet().getStringClaim("uid"),
                         jwt.getJWTClaimsSet().getStringClaim("name"),
-                        om.readValue(jwt.getJWTClaimsSet().getClaim("roles").toString(), Collection.class),
+                        jwt.getJWTClaimsSet().getStringListClaim("roles"),
                         om.readValue(jwt.getJWTClaimsSet().getClaim("attributes").toString(), Map.class),
                         jwt.getJWTClaimsSet().getStringClaim("session")
                     )

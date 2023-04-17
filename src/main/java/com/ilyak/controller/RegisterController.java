@@ -96,11 +96,9 @@ public class RegisterController extends BaseController{
             @QueryValue Optional<String> token
     ){
         try {
-            if (!generatorService.valid(token.orElseThrow()) ){
-                return HttpResponse.ok(
-                    CollectionUtils.mapOf("success", false)
-                );
-            }
+          //  if (!generatorService.valid(token.orElseThrow()) ){
+
+          //  }
             userRepository.updateUserIsConfirmByOid(JWTParser.parse(token.orElseThrow()).getJWTClaimsSet().getStringClaim("oid"), true);
 
             return HttpResponse.ok(

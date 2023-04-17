@@ -67,31 +67,36 @@ public class User extends BaseEntity {
 
     @JsonInclude
     @JsonProperty("user_is_confirm")
-    @Column(name = "user_is_confirm", nullable = false)
+    @Column(name = "user_is_confirm", columnDefinition = "boolean default false", nullable = false)
     @JsonAlias("userIsConfirm")
     private Boolean userIsConfirm;
 
     @JsonInclude
     @JsonProperty("user_telegram_link")
-    @Column(name = "user_telegram_link", nullable = false)
+    @Column(name = "user_telegram_link")
     @Schema(name = "user_telegram_link")
     private String telegramLink;
 
     @JsonInclude
     @JsonProperty("user_whatsup_link")
-    @Column(name = "user_whatsup_link", nullable = false)
+    @Column(name = "user_whatsup_link")
     @Schema(name = "user_whatsup_link")
     private String whatsUpLink;
 
     @JsonInclude
     @JsonProperty("user_rating")
-    @Column(name = "user_rating", nullable = false)
+    @Column(name = "user_rating")
     @Schema(name = "user_rating")
     private Double rating;
 
+    @JsonInclude
+    @JsonIgnore
+    @Column(name = "user_is_admin", columnDefinition = "boolean default false",nullable = false)
+    private Boolean isAdmin;
+
     public User(String oid, String userName, LocalDate userBirthday, LocalDate userRegDate, String userEmail,
                 String userPassword, Set<Files> avatars, String userPhoneNumber, Boolean userIsConfirm, String telegramLink,
-                String whatsUpLink, Double rating
+                String whatsUpLink, Double rating, Boolean isAdmin
     ) {
         super(oid);
         this.userName = userName;
@@ -105,6 +110,7 @@ public class User extends BaseEntity {
         this.telegramLink = telegramLink;
         this.whatsUpLink = whatsUpLink;
         this.rating = rating;
+        this.isAdmin = isAdmin;
     }
 
     public User() {
@@ -197,5 +203,13 @@ public class User extends BaseEntity {
 
     public void setRating(Double rating) {
         this.rating = rating;
+    }
+
+    public Boolean getIsAdmin() {
+        return isAdmin;
+    }
+
+    public void setIsAdmin(Boolean admin) {
+        isAdmin = admin;
     }
 }

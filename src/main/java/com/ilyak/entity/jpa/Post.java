@@ -47,7 +47,6 @@ public class Post extends BaseEntity {
     @JoinColumn(name = "post_creator_oid")
     @JsonProperty(value = "post_creator")
     @Schema(name = "post_creator")
-
     private User postCreator;
 
     @ManyToOne

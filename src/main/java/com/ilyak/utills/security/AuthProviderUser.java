@@ -12,6 +12,10 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import org.reactivestreams.Publisher;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
+
 
 @Singleton
 public class AuthProviderUser implements AuthenticationProvider {
@@ -31,7 +35,14 @@ public class AuthProviderUser implements AuthenticationProvider {
         if (!user.getUserPassword().equals(authenticationRequest.getSecret()))
             return Flowable.just(AuthenticationResponse.failure("Incorrect Password"));
 
-        return Flowable.just(new CustomAuthResponse(user.getOid(), user.getUserName()));
+        return Flowable.just(
+                new CustomAuthResponse(
+                        user.getOid(),
+                        user.getUserName(),
+                        user.getIsAdmin()? List.of("IS_ADMIN") : Collections.emptyList(),
+                        UUID.randomUUID().toString()
+                )
+        );
     }
 
 

@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 @JsonView(JsonViewCollector.Contract.BasicView.class)
 public class Contract extends BaseEntity{
 
-
     @Column(name = "contract_date")
     @JsonProperty(value = "contract_date")
     @Schema(name = "contract_date")

@@ -46,7 +46,7 @@ public class RegisterService {
         return IOUtils.toString(ClassLoaderUtils.findResourceAsStream(
                 "html-templates/confirm.html"),
                 Charset.forName("UTF-8")
-                        ).replace("[[confirmationLink]]", "crutch-code.ru/api/reg/confirm?token="
+                        ).replace("[[confirmationLink]]", "https://crutch-code.ru/api/reg/confirm?token="
                 + generator.generate(
                         "auth", "register", userOid
                 )
