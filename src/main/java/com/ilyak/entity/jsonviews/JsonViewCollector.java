@@ -1,9 +1,6 @@
 package com.ilyak.entity.jsonviews;
 
 public interface JsonViewCollector {
-    interface Default {
-
-    }
 
     interface BaseEntity {
         interface Default {
@@ -11,8 +8,6 @@ public interface JsonViewCollector {
         }
     }
 
-    interface WithModerator {
-    }
 
     interface PushMessage extends BaseEntity{
         interface BasicView extends Default {
@@ -40,6 +35,12 @@ public interface JsonViewCollector {
 
         }
 
+    }
+
+    interface Rating extends BaseEntity{
+        interface BasicView extends Default{
+
+        }
     }
 
     interface Message{
@@ -70,6 +71,10 @@ public interface JsonViewCollector {
 
     interface Post{
         interface BasicView extends BaseEntity.Default {
+
+        }
+
+        interface FullyUser extends User.BasicView{
 
         }
 

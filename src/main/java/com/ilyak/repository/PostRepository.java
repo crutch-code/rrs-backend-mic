@@ -14,22 +14,43 @@ import javax.annotation.Nullable;
 public interface PostRepository extends CrudRepository<Post, String> {
 
     @Query(
-            value = "from Post as t " +
-                    "where t.postFlat.flatAddress like concat('%', :location, '%') " +
-                    "and t.postStatus=:status "+
-                    "and (:uid is null or t.postCreator.oid =:uid)",
-            countQuery = "select count(t) from Post as t " +
-                        "where t.postFlat.flatAddress like concat('%', :location, '%') " +
-                        "and t.postStatus=:status " +
-                        "and (:uid is null or t.postCreator.oid =:uid)"
+            value = "from Post as post_ " +
+                    "where post_.postFlat.flatAddress like concat('%', :location, '%') " +
+                    "and post_.postStatus like concat('%', :status, '%') "+
+                    "and (:uid is null or post_.postCreator.oid =:uid)" +
+                    "and post_.postFlat.flatType like concat('%', :flat, '%') ",
+            countQuery = "select count(post_) from Post as post_ " +
+                        "where post_.postFlat.flatAddress like concat('%', :location, '%') " +
+                        "and post_.postStatus=:status " +
+                        "and (:uid is null or post_.postCreator.oid =:uid)" +
+                        "and post_.postFlat.flatType like concat('%', :flat, '%') "
     )
     Page<Post> getFiltered(
             String location,
-            String status,
+            @Nullable String status,
             @Nullable String uid,
-            Sort sort,
+            @Nullable String flat,
             Pageable pageable
     );
+
+//    @Query(
+//            value = "from Post as t " +
+//                    "where t.postFlat.flatAddress like concat('%', :location, '%') " +
+//                    "and t.postStatus like concat('%', :status, '%') "+
+//                    "and (:uid is null or t.postCreator.oid =:uid)" +
+//                    "and t.postFlat.flatType like concat('%', :flat, '%') ",
+//            countQuery = "select count(t) from Post as t "
+//    )
+//    Page<Post> getFiltered(
+//            String location,
+//            @Nullable String status,
+//            @Nullable String uid,
+//            @Nullable String flat,
+//            Sort sort,
+//            Pageable pageable
+//    );
+//
+
 
     @Query(value = "select exists(select from post as t where t.post_creator_oid=:uid " +
             "and t.oid=:chatOid)", nativeQuery = true)

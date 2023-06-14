@@ -50,7 +50,12 @@ public class Flat extends BaseEntity{
     @Column(name = "flat_y_map_cord")
     private Double flatYMapCord;
 
-    public Flat(String oid, User flatOwner, String flatAddress, Double square, Integer roomsCount, Double flatXMapCord, Double flatYMapCord) {
+    @Schema(name = "flat_type")
+    @JsonProperty("flat_type")
+    @Column(name = "flat_type")
+    private String flatType;
+
+    public Flat(String oid, User flatOwner, String flatAddress, Double square, Integer roomsCount, Double flatXMapCord, Double flatYMapCord, String flatType) {
         super(oid);
         this.flatOwner = flatOwner;
         this.flatAddress = flatAddress;
@@ -58,6 +63,7 @@ public class Flat extends BaseEntity{
         this.roomsCount = roomsCount;
         this.flatXMapCord = flatXMapCord;
         this.flatYMapCord = flatYMapCord;
+        this.flatType = flatType;
     }
 
     public Flat() {
@@ -110,5 +116,13 @@ public class Flat extends BaseEntity{
 
     public void setFlatYMapCord(Double flatYMapCord) {
         this.flatYMapCord = flatYMapCord;
+    }
+
+    public String getFlatType() {
+        return flatType;
+    }
+
+    public void setFlatType(String flatType) {
+        this.flatType = flatType;
     }
 }

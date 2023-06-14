@@ -1,4 +1,4 @@
-package com.ilyak.entity;
+package com.ilyak.entity.websocket;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -6,11 +6,12 @@ import com.ilyak.entity.jsonviews.JsonViewCollector;
 import com.ilyak.service.PushService;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 @JsonView(JsonViewCollector.PushMessage.BasicView.class)
 public class PushMessage{
 
-    PushService.PushType type;
+    PushService.MessageType type;
 
     String sender;
 
@@ -23,7 +24,13 @@ public class PushMessage{
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime timestamp;
 
-    public PushMessage(PushService.PushType type, String sender, String target, String oid, Object content, LocalDateTime timestamp) {
+    public PushMessage(
+            PushService.MessageType type,
+            String sender,
+            String target,
+            LocalDateTime timestamp,
+            Object content
+    ) {
         this.type = type;
         this.sender = sender;
         this.target = target;
@@ -35,11 +42,11 @@ public class PushMessage{
     public PushMessage() {
     }
 
-    public PushService.PushType getType() {
+    public PushService.MessageType getType() {
         return type;
     }
 
-    public void setType(PushService.PushType type) {
+    public void setType(PushService.MessageType type) {
         this.type = type;
     }
 

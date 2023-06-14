@@ -69,4 +69,6 @@ public class Files extends BaseEntity{
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
+
+
 }

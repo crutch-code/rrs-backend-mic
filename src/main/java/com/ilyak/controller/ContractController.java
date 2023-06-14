@@ -22,23 +22,25 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
 @Controller("/api/contracts")
-@Tag(name = "Контроллер для получения списка контрактов пользователя",
-        description = "Данный котроллер cодержит метод который позволяет получить список контрактов пользователя порционно"
-)
+    @Tag(name = "Контроллер для получения списка контрактов пользователя",
+            description = "Данный котроллер cодержит метод который позволяет получить список контрактов пользователя порционно"
+    )
 @Secured(SecuredAnnotationRule.IS_AUTHENTICATED)
 @Validated
 @SecurityScheme(name = "BearerAuth", type = SecuritySchemeType.HTTP, scheme = "bearer", bearerFormat = "jwt")
 public class ContractController  extends BaseController{
 
-    @Inject
-    ContractRepository repository;
+    private static final Logger logger = LoggerFactory.getLogger(ContractController.class);
+
 
     @ExecuteOn(TaskExecutors.IO)
-    @Operation(summary = "Infos about authored user")
+    @Operation(summary = "Получить все контракты пользователя")
     @Get(uri = "/get", produces = MediaType.APPLICATION_JSON_STREAM)
     @SecurityRequirement(name = "BearerAuth")
     @JsonView(JsonViewCollector.Contract.BasicView.class)
@@ -46,6 +48,7 @@ public class ContractController  extends BaseController{
             @QueryValue Optional<Integer> page_num,
             @QueryValue Optional<Integer> page_size
     ){
-        return repository.findByUsers(getUserId(), getPageable(page_num.orElse(null), page_size.orElse(null)));
+        logger.info("Call /api/contracts/get: " + getUserId());
+        return contractRepository.findByUsers(getUserId(), getPageable(page_num.orElse(null), page_size.orElse(null)));
     }
 }

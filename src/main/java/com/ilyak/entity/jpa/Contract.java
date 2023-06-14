@@ -1,6 +1,7 @@
 package com.ilyak.entity.jpa;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.ilyak.entity.jsonviews.JsonViewCollector;
@@ -19,16 +20,19 @@ public class Contract extends BaseEntity{
     @Column(name = "contract_date")
     @JsonProperty(value = "contract_date")
     @Schema(name = "contract_date")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime contractDate;
 
     @Column(name = "contract_start_rent")
     @JsonProperty(value = "contract_start_rent")
     @Schema(name = "contract_start_rent")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime start;
 
     @Column(name = "contract_end_rent")
     @JsonProperty(value = "contract_end_rent")
     @Schema(name = "contract_end_rent")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime end;
 
     @ManyToOne

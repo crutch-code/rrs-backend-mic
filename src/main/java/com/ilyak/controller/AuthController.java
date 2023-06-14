@@ -115,7 +115,6 @@ public class AuthController extends BaseController {
     @Operation(summary = "Logout current user")
     @Post(uri = "/logout", produces = MediaType.APPLICATION_JSON)
     @SecurityRequirement(name = "BearerAuth")
-    @JsonView(JsonViewCollector.Default.class)
     @Secured(SecurityRule.IS_AUTHENTICATED)
     public DefaultAppResponse logout(HttpRequest<?> request){
         try {

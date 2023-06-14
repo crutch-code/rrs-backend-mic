@@ -8,6 +8,7 @@ import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import io.micronaut.data.repository.CrudRepository;
 
+import javax.annotation.Nullable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,13 +22,19 @@ public interface RentOfferRepository  extends CrudRepository<RentOffer, String> 
             value = "from RentOffer as t " +
                     "where t.post.oid =:oid " +
                     "and t.resolve = true " +
-                    "and (cast(:start as timestamp) is null or t.start >=cast(:start as timestamp)) " +
-                    "and (cast(:end as timestamp) is null or t.end <=cast(:end as timestamp)) ",
+                    "and t.start >= :startRent " +
+                    "and t.end <= :endRent ",
             countQuery = "select count(t) from RentOffer as t " +
                     "where t.post.oid =:oid " +
                     "and t.resolve = true " +
-                    "and (cast(:start as timestamp) is null or t.start >=cast(:start as timestamp)) " +
-                    "and (cast(:end as timestamp) is null or t.end <=cast(:end as timestamp)) "
+                    "and t.start >= :startRent " +
+                    "and t.end <= :endRent "
     )
-    Page<RentOffer> reservedDates(String oid, LocalDateTime start, LocalDateTime end, Pageable pageable);
+    Page<RentOffer> reservedDates(String oid, @Nullable LocalDateTime startRent, @Nullable LocalDateTime endRent, Pageable pageable);
+
+    @Query(
+            value = "from RentOffer t where t.renter.oid = :oid or t.post.postCreator.oid = :oid",
+            countQuery = "select count(t) from RentOffer t where t.renter.oid = :oid or t.post.postCreator.oid = :oid"
+    )
+    Page<RentOffer> findByUser(String oid, Pageable pageable);
 }

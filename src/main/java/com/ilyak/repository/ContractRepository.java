@@ -13,8 +13,8 @@ import jakarta.inject.Singleton;
 public interface ContractRepository extends CrudRepository<Contract, String> {
 
     @Query(
-            value = "from Contract as t where t.renter =:oid or t.owner =:oid order by t.contractDate asc ",
-            countQuery = "select count(t) from Contract as t where t.renter =:oid or t.owner =:oid"
+            value = "from Contract as t where t.renter.oid =:oid or t.owner.oid =:oid order by t.contractDate desc ",
+            countQuery = "select count(t) from Contract as t where t.renter.oid =:oid or t.owner.oid =:oid"
     )
     Page<Contract> findByUsers(String oid, Pageable pageable);
 }

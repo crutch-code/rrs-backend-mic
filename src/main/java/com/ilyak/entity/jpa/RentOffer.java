@@ -37,7 +37,7 @@ public class RentOffer extends BaseEntity{
     @Column(name = "rent_offer_start")
     @JsonView({
             JsonViewCollector.RentOffer.OnlyDates.class,
-            JsonViewCollector.RentOffer.WithDates.class
+            JsonViewCollector.RentOffer.WithDates.class,
     })
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonAlias("rent_offer_start")

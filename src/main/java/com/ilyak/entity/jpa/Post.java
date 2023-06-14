@@ -18,7 +18,7 @@ import java.util.Set;
 @Entity
 @Table(name = "post", schema = "public")
 @Introspected
-@JsonView(JsonViewCollector.Post.BasicView.class)
+@JsonView({JsonViewCollector.Post.BasicView.class, JsonViewCollector.Post.FullyUser.class})
 @DynamicInsert
 @JacksonFeatures(additionalModules = JavaTimeModule.class)
 public class Post extends BaseEntity {
@@ -49,12 +49,6 @@ public class Post extends BaseEntity {
     @Schema(name = "post_creator")
     private User postCreator;
 
-    @ManyToOne
-    @JoinColumn(name = "post_moderator_oid", updatable = false)
-    @JsonView({JsonViewCollector.Post.WithModerator.class})
-    @JsonProperty(value = "post_moderator")
-    @Schema(name = "post_moderator")
-    private User postModerator;
 
     @ManyToOne
     @JoinColumn(name = "post_flat_oid", nullable = false, updatable = false)
@@ -77,14 +71,13 @@ public class Post extends BaseEntity {
     @Schema(name = "post_photos")
     private Set<Files> postPhotos = new java.util.LinkedHashSet<>();
 
-    public Post(String oid, String postStatus, Double price, String postTitle, String postInformation, User postCreator, User postModerator, Flat postFlat, LocalDateTime postCreationDate, Set<Files> postPhotos) {
+    public Post(String oid, String postStatus, Double price, String postTitle, String postInformation, User postCreator, Flat postFlat, LocalDateTime postCreationDate, Set<Files> postPhotos) {
         super(oid);
         this.postStatus = postStatus;
         this.price = price;
         this.postTitle = postTitle;
         this.postInformation = postInformation;
         this.postCreator = postCreator;
-        this.postModerator = postModerator;
         this.postFlat = postFlat;
         this.postCreationDate = postCreationDate;
         this.postPhotos = postPhotos;
@@ -139,14 +132,6 @@ public class Post extends BaseEntity {
 
     public void setPostCreator(User postCreator) {
         this.postCreator = postCreator;
-    }
-
-    public User getPostModerator() {
-        return postModerator;
-    }
-
-    public void setPostModerator(User postModerator) {
-        this.postModerator = postModerator;
     }
 
     public Flat getPostFlat() {

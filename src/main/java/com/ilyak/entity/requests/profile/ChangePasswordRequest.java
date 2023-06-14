@@ -14,13 +14,13 @@ public class ChangePasswordRequest {
     @Schema(name = "new_password")
     @JsonProperty(value = "new_password")
     private String newPassword;
-    @JsonInclude
-    private boolean kill;
 
-    public ChangePasswordRequest(String oldPassword, String newPassword, boolean kill) {
+    public ChangePasswordRequest() {
+    }
+
+    public ChangePasswordRequest(String oldPassword, String newPassword) {
         this.oldPassword = oldPassword;
         this.newPassword = newPassword;
-        this.kill = kill;
     }
 
     public String getOldPassword() {
@@ -39,11 +39,4 @@ public class ChangePasswordRequest {
         this.newPassword = newPassword;
     }
 
-    public void setKill(boolean kill) {
-        this.kill = kill;
-    }
-
-    public boolean isKill() {
-        return kill;
-    }
 }

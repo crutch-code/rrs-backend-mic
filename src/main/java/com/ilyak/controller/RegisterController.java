@@ -27,7 +27,8 @@ import java.time.ZoneId;
 import java.util.Optional;
 
 @Controller("/api/reg")
-@Tag(name = "Контроллер Регистрации",
+@Tag(
+        name = "Контроллер Регистрации",
         description = "Данный котроллер отвечает за регистрацию пользователей в систему Remote Rent System"
 )
 @Secured(SecuredAnnotationRule.IS_ANONYMOUS)
@@ -99,7 +100,7 @@ public class RegisterController extends BaseController{
           //  if (!generatorService.valid(token.orElseThrow()) ){
 
           //  }
-            userRepository.updateUserIsConfirmByOid(JWTParser.parse(token.orElseThrow()).getJWTClaimsSet().getStringClaim("oid"), true);
+            userRepository.updateUserIsConfirmByOid(JWTParser.parse(token.orElseThrow()).getJWTClaimsSet().getStringClaim("uid"), true);
 
             return HttpResponse.ok(
                     CollectionUtils.mapOf("success", true)

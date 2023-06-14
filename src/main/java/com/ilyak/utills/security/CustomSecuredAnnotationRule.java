@@ -1,6 +1,9 @@
 package com.ilyak.utills.security;
 
+import com.ilyak.controller.BaseController;
+import com.ilyak.repository.UserRepository;
 import com.ilyak.service.UserLogoutService;
+import com.nimbusds.jwt.JWTParser;
 import io.micronaut.context.annotation.Replaces;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.security.annotation.Secured;
@@ -17,6 +20,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import org.reactivestreams.Publisher;
 
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +35,9 @@ public class CustomSecuredAnnotationRule extends SecuredAnnotationRule {
     @Inject
     UserLogoutService userLogoutService;
 
+    @Inject
+    UserRepository userRepository;
+
     public CustomSecuredAnnotationRule(RolesFinder rolesFinder) {
         super(rolesFinder);
     }
@@ -43,7 +50,19 @@ public class CustomSecuredAnnotationRule extends SecuredAnnotationRule {
                 Optional<String[]> optionalValue = methodRoute.getValue(Secured.class, String[].class);
                 if (optionalValue.isPresent()) {
                     List<String> values = Arrays.asList(optionalValue.get());
-                    String bearerToken = String.valueOf(request.getHeaders().getAuthorization().orElse(null));
+                    String bearerToken = String.valueOf(request.getHeaders().getAuthorization().orElse("")); // bearerToken.substring(bearerToken.lastIndexOf(" ") + 1)
+                    if (!bearerToken.equals("")){
+                        try {
+                            Boolean banned = userRepository.findById(
+                                    JWTParser.parse(bearerToken.substring(bearerToken.lastIndexOf(" ") + 1))
+                                            .getJWTClaimsSet()
+                                            .getStringClaim("uid")
+                            ).orElseThrow().getIsBanned();
+                            if(banned) return Flowable.just(SecurityRuleResult.REJECTED);
+                        } catch (ParseException e) {
+                            e.getStackTrace();
+                        }
+                    }
                     if (values.contains(SecurityRule.DENY_ALL)) {
                         return Flowable.just(SecurityRuleResult.REJECTED);
                     }

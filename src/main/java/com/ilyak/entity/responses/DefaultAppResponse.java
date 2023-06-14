@@ -3,6 +3,8 @@ package com.ilyak.entity.responses;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import javax.persistence.MappedSuperclass;
+
 
 @JsonInclude(value = JsonInclude.Include.NON_EMPTY)
 public class DefaultAppResponse {

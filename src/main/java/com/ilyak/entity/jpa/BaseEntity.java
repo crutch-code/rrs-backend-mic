@@ -6,10 +6,11 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.ilyak.entity.jsonviews.JsonViewCollector;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @MappedSuperclass
 @JsonView(JsonViewCollector.BaseEntity.class)
-public class BaseEntity {
+public abstract class BaseEntity {
     @Id
     @JsonInclude
     @Column(name= "oid")
@@ -30,5 +31,17 @@ public class BaseEntity {
 
     public void setOid(String oid) {
         this.oid = oid;
+    }
+
+
+    @Override
+    public boolean equals(Object obj){
+        if(!(obj instanceof BaseEntity)) throw new IllegalArgumentException();
+        return this.oid.equals(((BaseEntity) obj).oid);
+    };
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(oid);
     }
 }

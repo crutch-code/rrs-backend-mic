@@ -45,10 +45,9 @@ public class FlatController extends BaseController {
     public static final Logger logger = LoggerFactory.getLogger(FileController.class);
 
     @ExecuteOn(TaskExecutors.IO)
-    @Operation(summary = "Добавление квартиры")
+    @Operation(summary = "Добавление объекта пользователя")
     @Post(uri = "/add", consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON_STREAM)
     @SecurityRequirement(name = "BearerAuth")
-    @JsonView(JsonViewCollector.Default.class)
     public HttpResponse<DefaultAppResponse> addFlat(@Body List<Flat> flats){
         try{
             flats.stream().map(m-> {
@@ -65,7 +64,7 @@ public class FlatController extends BaseController {
     }
 
     @ExecuteOn(TaskExecutors.IO)
-    @Operation(summary = "Удаление квратиры")
+    @Operation(summary = "Удаление объекта пользователя")
     @Delete(uri = "/delete{?oid}", produces = MediaType.APPLICATION_JSON_STREAM)
     @SecurityRequirement(name = "BearerAuth")
     public HttpResponse<DefaultAppResponse> deleteFlat(@QueryValue Optional<String> oid){
@@ -79,7 +78,7 @@ public class FlatController extends BaseController {
     }
 
     @ExecuteOn(TaskExecutors.IO)
-    @Operation(summary = "Получение списка кваритр пользователя")
+    @Operation(summary = "Получение списка объектов пользователя")
     @Get(uri = "/get{?page_num,page_size}", produces = MediaType.APPLICATION_JSON_STREAM)
     @SecurityRequirement(name = "BearerAuth")
     @JsonView(JsonViewCollector.Flat.BasicView.class)

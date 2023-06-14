@@ -51,7 +51,7 @@ public class User extends BaseEntity {
     @JsonView(JsonViewCollector.User.WithPassword.class)
     private String userPassword;
 
-    @ManyToMany
+    @ManyToMany()
     @JoinTable(name = "users_avatar_file",
             joinColumns = @JoinColumn(name = "user_oid", referencedColumnName = "oid"),
             inverseJoinColumns = @JoinColumn(name = "file_oid", referencedColumnName = "oid"))
@@ -94,9 +94,14 @@ public class User extends BaseEntity {
     @Column(name = "user_is_admin", columnDefinition = "boolean default false",nullable = false)
     private Boolean isAdmin;
 
+    @JsonInclude
+    @JsonProperty("user_is_banned")
+    @Column(name = "user_is_banned", columnDefinition = "boolean default false",nullable = false)
+    private Boolean isBanned;
+
     public User(String oid, String userName, LocalDate userBirthday, LocalDate userRegDate, String userEmail,
                 String userPassword, Set<Files> avatars, String userPhoneNumber, Boolean userIsConfirm, String telegramLink,
-                String whatsUpLink, Double rating, Boolean isAdmin
+                String whatsUpLink, Double rating, Boolean isAdmin, Boolean isBanned
     ) {
         super(oid);
         this.userName = userName;
@@ -111,6 +116,7 @@ public class User extends BaseEntity {
         this.whatsUpLink = whatsUpLink;
         this.rating = rating;
         this.isAdmin = isAdmin;
+        this.isBanned = isBanned;
     }
 
     public User() {
@@ -211,5 +217,13 @@ public class User extends BaseEntity {
 
     public void setIsAdmin(Boolean admin) {
         isAdmin = admin;
+    }
+
+    public Boolean getIsBanned() {
+        return isBanned;
+    }
+
+    public void setIsBanned(Boolean banned) {
+        isBanned = banned;
     }
 }

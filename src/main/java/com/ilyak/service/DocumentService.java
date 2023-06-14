@@ -17,7 +17,9 @@ import org.apache.pdfbox.text.PDFTextStripper;
 import org.thymeleaf.util.ClassLoaderUtils;
 
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.OutputStream;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Map;
@@ -37,18 +39,15 @@ public class DocumentService {
     FilesRepository filesRepository;
 
     @SneakyThrows
-    public Files genDocument(Map<String, String> anchors){
-        Document doc = new Document(ClassLoaderUtils.findResourceAsStream("conclusion_template.docx"));
-        replaceTextInDocumentBody(anchors, doc);
+    public Files genDocument(Map<String, Object> anchors){
         String path =
                 filesService.getDirPattern() +
-                filesService.getAvatars() +
+                filesService.getDocuments() +
                 filesService.uniqueName(
                         Joiner.on(";").withKeyValueSeparator(":").join(anchors),
                         ".pdf"
                 );
-
-        doc.saveToFile(path, FileFormat.PDF);
+        replacer("conclusion_template.docx", anchors).saveToFile(path, FileFormat.PDF);
         return new Files(
                 null,
                 path,
@@ -57,13 +56,35 @@ public class DocumentService {
         );
     }
 
-    static void replaceTextInDocumentBody(Map<String, String> map, Document document){
+    @SneakyThrows
+    public ByteArrayOutputStream genReport(Map<String, Object> anchors){
+//        ?
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        replacer("report_template.docx", anchors).saveToStream(os, FileFormat.PDF);
+        return os;
+    }
+
+    private Document replacer(
+            String template,
+            Map<String, Object> anchors
+    ){
+        Document document = new Document(ClassLoaderUtils.findResourceAsStream(template));
         for(Section section : (Iterable<Section>)document.getSections()) {
             for (Paragraph para : (Iterable<Paragraph>) section.getParagraphs()) {
-                for (Map.Entry<String, String> entry : map.entrySet()) {
-                    para.replace("${" + entry.getKey() + "}", entry.getValue(), false, true);
+                for (Map.Entry<String, Object> entry : anchors.entrySet()) {
+                    para.replace(
+                            "${" + entry.getKey() + "}",
+                            entry.getValue() == null ? "N/A" : entry.getValue().toString(),
+                            false,
+                            false
+                    );
                 }
             }
         }
+        return document;
+    }
+
+    static void replaceTextInDocumentBody(Map<String, String> map, Document document){
+
     }
 }
